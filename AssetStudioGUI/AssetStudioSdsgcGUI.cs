@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using AssetStudio;
@@ -29,6 +30,10 @@ public partial class AssetStudioGUIForm
         _sdsgcMenu.DropDownItems.Add(new ToolStripSeparator());
         _sdsgcMenu.DropDownItems.Add(_sdsgcSearchBundlesMenuItem);
         
+        // We need to force the focus on the search button otherwise it won't glow blue
+        _sdsgcSearchBundlesMenuItem.MouseEnter += (_, _) => _sdsgcMenu.DropDown.Focus();
+        _sdsgcSearchBundlesMenuItem.Click += SdsgcSearchBundles_Click;
+
         // Place menu before the "About" menu
         menuStrip1.Items.Insert(menuStrip1.Items.IndexOf(aboutToolStripMenuItem), _sdsgcMenu);
         return;
@@ -42,8 +47,24 @@ public partial class AssetStudioGUIForm
                 ShowShortcutKeys = false,
                 Text = labelText
             });
+            textBox.TextChanged += RefreshSdsgcSearchButtonState;
             _sdsgcMenu.DropDownItems.Add(textBox);
         }
+    }
+
+    // Event called when the user clicks on _sdsgcSearchBundlesMenuItem
+    private void SdsgcSearchBundles_Click(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+    
+    // Only enable the search button when all the text inputs of the menu are filled
+    private void RefreshSdsgcSearchButtonState(object sender, EventArgs e)
+    {
+        _sdsgcSearchBundlesMenuItem.Enabled =
+            !string.IsNullOrWhiteSpace(_sdsgcPatchTextBox.Text) &&
+            !string.IsNullOrWhiteSpace(_sdsgcVersionTextBox.Text) &&
+            !string.IsNullOrWhiteSpace(_sdsgcKeyTextBox.Text);
     }
     
     private static ToolStripTextBox DefaultSdsgcToolStripTextBox() => new()
