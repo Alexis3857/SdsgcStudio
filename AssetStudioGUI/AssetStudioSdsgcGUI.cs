@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using AssetStudio;
+using AssetStudioGUI.Sdsgc;
 using Font = System.Drawing.Font;
 
 namespace AssetStudioGUI;
@@ -53,9 +54,10 @@ public partial class AssetStudioGUIForm
     }
 
     // Event called when the user clicks on _sdsgcSearchBundlesMenuItem
-    private void SdsgcSearchBundles_Click(object sender, EventArgs e)
+    private async void SdsgcSearchBundles_Click(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        var client = new SdsgcClient(_sdsgcPatchTextBox.Text, _sdsgcVersionTextBox.Text, _sdsgcKeyTextBox.Text);
+        await client.GetPatchIndexAsync();
     }
     
     // Only enable the search button when all the text inputs of the menu are filled
