@@ -18,7 +18,7 @@ public class SdsgcClient(string patch, string version, string key)
     // m = the path that contains images and 3d models
     private readonly string _bundleUrl = $"https://nanagb.gcdn.netmarble.com/nanagb/bundle/aos/astc/{patch}/{version}/m/";
 
-    public async Task GetPatchIndexAsync()
+    public async Task<IPatchIndexer> GetPatchIndexAsync()
     {
         // Special Unity bundle name that acts as a manifest of all other Unity bundles
         await using var stream = await DownloadBundleAsync("bmdata");
@@ -30,6 +30,8 @@ public class SdsgcClient(string patch, string version, string key)
 
         if (bundleDatas == null || bundlePackDatas == null)
             throw new Exception("Failed to export bmdata TextAsset");
+
+        return TMIndexer.Create(bundleDatas, bundlePackDatas);
     }
 
     /// <summary>Downloads a bundle</summary>
