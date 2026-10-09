@@ -171,6 +171,8 @@ namespace AssetStudioGUI
             Progress.Default = new Progress<int>(SetProgressBarValue);
             Progress.SetInstance(index: 1, new Progress<int>(SetProgressBarStringValue));
             Studio.StatusStripUpdate = StatusStripUpdate;
+
+            InitializeSdsgcMenu();
         }
 
         private void AssetStudioGUIForm_DragEnter(object sender, DragEventArgs e)
