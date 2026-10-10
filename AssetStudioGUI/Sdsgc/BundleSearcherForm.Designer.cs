@@ -38,7 +38,7 @@ partial class BundleSearcherForm
         _fullNameCheckBox = new System.Windows.Forms.CheckBox();
         _nameCheckBox = new System.Windows.Forms.CheckBox();
         _queryTextBox = new System.Windows.Forms.TextBox();
-        _resultsTreeView = new System.Windows.Forms.TreeView();
+        _resultsTreeView = new BundleSearcherForm.CheckBoxTreeView();
         _bottomBar = new System.Windows.Forms.Panel();
         _downloadButton = new System.Windows.Forms.Button();
         _statusLabel = new System.Windows.Forms.Label();
@@ -140,6 +140,7 @@ partial class BundleSearcherForm
         _resultsTreeView.Size = new System.Drawing.Size(800, 382);
         _resultsTreeView.TabIndex = 1;
         _resultsTreeView.BeforeCheck += ResultsTreeView_BeforeCheck;
+        _resultsTreeView.AfterCheck += ResultsTreeView_AfterCheck;
         // 
         // _bottomBar
         // 
@@ -159,7 +160,7 @@ partial class BundleSearcherForm
         _downloadButton.Name = "_downloadButton";
         _downloadButton.Size = new System.Drawing.Size(129, 25);
         _downloadButton.TabIndex = 1;
-        _downloadButton.Text = "Download selected";
+        _downloadButton.Text = "Download 0 bundles";
         _downloadButton.UseVisualStyleBackColor = true;
         // 
         // _statusLabel
@@ -199,7 +200,7 @@ partial class BundleSearcherForm
     private System.Windows.Forms.CheckBox _regexCheckBox;
     private System.Windows.Forms.Button _searchButton;
 
-    private System.Windows.Forms.TreeView _resultsTreeView;
+    private BundleSearcherForm.CheckBoxTreeView _resultsTreeView;
 
     private System.Windows.Forms.Panel _bottomBar;
     private System.Windows.Forms.Label _statusLabel;

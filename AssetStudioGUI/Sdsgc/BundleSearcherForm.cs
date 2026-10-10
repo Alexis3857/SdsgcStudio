@@ -29,7 +29,7 @@ public partial class BundleSearcherForm : Form
         if (_queryTextBox.Text is not { Length: >= MinQueryLen } query)
             return;
         
-        Logger.Verbose($"Searching {query}: " +
+        Logger.Verbose($"Searching \'{query}\' with flags: " +
                        $"{(_nameCheckBox.Checked ? SearchFlags.Name : string.Empty)}" +
                        $"{(_fullNameCheckBox.Checked ? SearchFlags.FullName : string.Empty)}" +
                        $"{(_bundleNameCheckBox.Checked ? SearchFlags.BundleName : string.Empty)}" +
@@ -73,7 +73,7 @@ public partial class BundleSearcherForm : Form
         }
         _resultsTreeView.EndUpdate();
 
-        _statusLabel.Text = results.Count == 0 ? "No results" : $"{results.Sum(b => b.Count())} assets in {results.Count} bundles";
+        RefreshResultsState();
     }
 
     // Only enable the search button if there is a query long enough, and at least one of the 3 search flag is checked
@@ -82,6 +82,18 @@ public partial class BundleSearcherForm : Form
 
     // Prevent assets from being checked in the tree view
     private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Tag is IPatchIndexer.IndexedAsset;
+
+    private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e) => RefreshResultsState();
+    
+    // Show the results count and how many bundles are selected, and only enable the download button if at least one is
+    private void RefreshResultsState()
+    {
+        var bundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToList();
+        var selectedCount = bundles.Count(b => b.Checked);
+        _statusLabel.Text = bundles.Count == 0 ? "No results" : $"{bundles.Sum(b => b.Nodes.Count)} assets in {bundles.Count} bundles";
+        _downloadButton.Text = $@"Download {selectedCount} bundles";
+        _downloadButton.Enabled = selectedCount > 0;
+    }
 
     #region Hide checkboxes in asset nodes
     
@@ -123,4 +135,23 @@ public partial class BundleSearcherForm : Form
     private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, ref TvItem lParam);
 
     #endregion
+    
+    // In a normal TreeView double clicks visually check the box without updating TreeNode.Checked or calling BeforeCheck/AfterCheck
+    // This converts double clicks on a checkbox into single clicks
+    public class CheckBoxTreeView : TreeView
+    {
+        private const int WmLButtonDown = 0x201;
+        private const int WmLButtonDblClk = 0x203;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WmLButtonDblClk && CheckBoxes)
+            {
+                var lParam = (long)m.LParam;
+                if (HitTest((short)lParam, (short)(lParam >> 16)).Location == TreeViewHitTestLocations.StateImage)
+                    m.Msg = WmLButtonDown;
+            }
+            base.WndProc(ref m);
+        }
+    }
 }
