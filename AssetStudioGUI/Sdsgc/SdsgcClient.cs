@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using AssetStudio;
 
@@ -12,7 +13,10 @@ namespace AssetStudioGUI.Sdsgc;
 
 public class SdsgcClient(string patch, string version, string key)
 {
-    private static readonly HttpClient s_httpClient = new();
+    private static readonly HttpClient s_httpClient = new()
+    {
+        Timeout = Timeout.InfiniteTimeSpan
+    };
     private static readonly ConcurrentDictionary<(string patch, string version), IPatchIndexer> s_indexerCache = [];
     
     // nanagb = international version of the game
