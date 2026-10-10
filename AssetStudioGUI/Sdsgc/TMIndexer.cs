@@ -12,14 +12,12 @@ namespace AssetStudioGUI.Sdsgc;
 /// <summary>Textures and models indexer (I suck at naming things)</summary>
 public class TMIndexer : IPatchIndexer
 {
-    // All indexed assets
-    private readonly ImmutableArray<IndexedAsset> _indexedAssets;
+    // All indexed bundles
+    private readonly ImmutableArray<IndexedBundle> _indexedBundles;
 
-    public int BundleCount { get; }
+    public int BundleCount => _indexedBundles.Length;
 
-    public int AssetCount => _indexedAssets.Length;
-
-    public List<IGrouping<string, IndexedAsset>> Search(string query, SearchFlags flags)
+    public List<IndexedBundle> Search(string query, SearchFlags flags)
     {
         if (query == string.Empty)
             return [];
@@ -37,22 +35,20 @@ public class TMIndexer : IPatchIndexer
         return Search(s => s.Contains(query, StringComparison.OrdinalIgnoreCase), flags);
     }
 
-    private List<IGrouping<string, IndexedAsset>> Search(Func<string, bool> isMatch, SearchFlags flags) =>
+    private List<IndexedBundle> Search(Func<string, bool> isMatch, SearchFlags flags) =>
     [
-        .._indexedAssets
-            .Where(a => 
-                (flags.HasFlag(SearchFlags.Name) && isMatch(a.Name)) || 
-                (flags.HasFlag(SearchFlags.FullName) && isMatch(a.FullName)) || 
-                (flags.HasFlag(SearchFlags.BundleName) && isMatch(a.Bundle.Name)))
-            .GroupBy(a => a.Bundle.Name)
+        .._indexedBundles
+            .Where(b => 
+                flags.HasFlag(SearchFlags.BundleName) && isMatch(b.Bundle.Name) || 
+                b.Assets.Any(a => 
+                    (flags.HasFlag(SearchFlags.Name) && isMatch(a.Name)) || 
+                    (flags.HasFlag(SearchFlags.FullName) && isMatch(a.FullName))))
     ];
 
-    private TMIndexer(IEnumerable<IndexedAsset> indexedAssets)
+    private TMIndexer(IEnumerable<IndexedBundle> indexedBundles)
     {
-        _indexedAssets = [.. indexedAssets];
-        BundleCount = _indexedAssets.Select(a => a.Bundle).Distinct().Count();
-        
-        Logger.Verbose($"Indexed {BundleCount} bundles and {AssetCount} assets");
+        _indexedBundles = [..indexedBundles];
+        Logger.Verbose($"Indexed {BundleCount} bundles");
     }
 
     public static TMIndexer Create(BundleData[] bundleData, BundlePackData[] packData)
@@ -64,12 +60,20 @@ public class TMIndexer : IPatchIndexer
             foreach (var bundle in pack.IncludeBundles)
                 packDict.Add(bundle, pack);
 
-        // Find all assets that are either a texture or a model and create a TMIndexer instance from them
-        return new TMIndexer(bundleData
-            .SelectMany(b => b.Assets.Where(a =>
+        // Find all bundles that contain at least one texture or model and create the TMIndexer instance
+        List<IndexedBundle> bundles = [];
+        foreach (var bundle in bundleData)
+        {
+            var indexedAssets = bundle.Assets.Where(a => 
                     a.EndsWith(".png", StringComparison.Ordinal) ||
                     a.EndsWith(".asset", StringComparison.Ordinal) ||
                     a.EndsWith(".prefab", StringComparison.Ordinal))
-                .Select(a => new IndexedAsset(Path.GetFileName(a), a, b, packDict[b.Checksum]))));
+                .Select(a => new IndexedAsset(Path.GetFileName(a), a))
+                .ToImmutableArray();
+
+            if (!indexedAssets.IsEmpty)
+                bundles.Add(new IndexedBundle(bundle, packDict[bundle.Checksum], indexedAssets));
+        }
+        return new TMIndexer(bundles);
     }
 }

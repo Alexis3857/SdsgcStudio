@@ -23,7 +23,7 @@ public partial class BundleSearcherForm : Form
     private readonly IPatchIndexer _indexer;
 
     // Bundles selected by the user with their pack, kept across searches
-    private readonly Dictionary<BundleData, BundlePackData> _selectedBundles = [];
+    private readonly HashSet<IPatchIndexer.IndexedBundle> _selectedBundles = [];
 
     /// <summary>
     /// Bundles selected when the user before closing the form<br/>
@@ -37,7 +37,7 @@ public partial class BundleSearcherForm : Form
         _indexer = indexer;
     }
 
-    // Search the matching assets and update _resultsTreeView
+    // Search the matching bundles and update _resultsTreeView
     private async void SearchButton_Click(object sender, EventArgs e)
     {
         if (_queryTextBox.Text is not { Length: >= MinQueryLen } query)
@@ -49,7 +49,7 @@ public partial class BundleSearcherForm : Form
                        $"{(_bundleNameCheckBox.Checked ? SearchFlags.BundleName : string.Empty)}" +
                        $"{(_regexCheckBox.Checked ? SearchFlags.Regex : string.Empty)}");
         
-        List<IGrouping<string, IPatchIndexer.IndexedAsset>> results;
+        List<IPatchIndexer.IndexedBundle> results;
         _searchButton.Enabled = false;
         _statusLabel.Text = @"Searching...";
         try
@@ -77,10 +77,9 @@ public partial class BundleSearcherForm : Form
         _resultsTreeView.Nodes.Clear();
         foreach (var bundle in results)
         {
-            var bundleAsset = bundle.First();
-            var bundleNode = new TreeNode(bundle.Key) { Tag = bundleAsset, Checked = _selectedBundles.ContainsKey(bundleAsset.Bundle) };
+            var bundleNode = new TreeNode(bundle.Bundle.Name) { Tag = bundle, Checked = _selectedBundles.Contains(bundle) };
             _resultsTreeView.Nodes.Add(bundleNode);
-            foreach (var asset in bundle)
+            foreach (var asset in bundle.Assets)
             {
                 var assetNode = bundleNode.Nodes.Add(asset.FullName);
                 assetNode.Tag = asset;
@@ -102,9 +101,9 @@ public partial class BundleSearcherForm : Form
     // Only bundle nodes reach AfterCheck, since BeforeCheck cancels assets
     private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e)
     {
-        var asset = (IPatchIndexer.IndexedAsset)e.Node!.Tag!;
-        if (e.Node.Checked) _selectedBundles[asset.Bundle] = asset.Pack;
-        else _selectedBundles.Remove(asset.Bundle);
+        var bundle = (IPatchIndexer.IndexedBundle)e.Node!.Tag!;
+        if (e.Node.Checked) _selectedBundles.Add(bundle);
+        else _selectedBundles.Remove(bundle);
 
         RefreshResultsState();
     }
@@ -129,7 +128,7 @@ public partial class BundleSearcherForm : Form
     private void DownloadButton_Click(object sender, EventArgs e)
     {
         // Group the selected bundles by pack, since packs contain several bundles
-        var selectedBundles = _selectedBundles.ToLookup(b => b.Value, b => b.Key);
+        var selectedBundles = _selectedBundles.ToLookup(b => b.Pack, b => b.Bundle);
 
         // If the download size is too big a confirmation MessageBox will appear
         var downloadSize = selectedBundles.Sum(p => p.Key.Size);
@@ -150,7 +149,7 @@ public partial class BundleSearcherForm : Form
     {
         var bundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToList();
         var selectedCount = _selectedBundles.Count;
-        _statusLabel.Text = bundles.Count == 0 ? "No results" : $"{bundles.Sum(b => b.Nodes.Count)} assets in {bundles.Count} bundles";
+        _statusLabel.Text = bundles.Count == 0 ? "No results" : $"{bundles.Count} bundles";
         _downloadButton.Text = $@"Download {selectedCount} Bundles";
         _downloadButton.Enabled = selectedCount > 0;
         _selectAllButton.Enabled = bundles.Any(b => !b.Checked);

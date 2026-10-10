@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
 
 namespace AssetStudioGUI.Sdsgc;
 
@@ -9,22 +9,23 @@ public interface IPatchIndexer
 {
     /// <summary>Number of indexed Unity bundles</summary>
     int BundleCount { get; }
-    
-    /// <summary>Number of indexed assets</summary>
-    int AssetCount { get; }
 
-    /// <summary>Searches for assets that match the input</summary>
+    /// <summary>Searches for bundles that match the input</summary>
     /// <param name="query">Search string</param>
     /// <param name="flags">Search options</param>
-    /// <returns>Matching assets, grouped by <see cref="IndexedAsset.Bundle"/>.Name</returns>
-    List<IGrouping<string, IndexedAsset>> Search(string query, SearchFlags flags);
+    /// <returns>Matching bundles</returns>
+    List<IndexedBundle> Search(string query, SearchFlags flags);
     
-    /// <summary>A single asset file</summary>
-    /// <param name="Name">Asset name</param>
-    /// <param name="FullName">Asset full name (container)</param>
-    /// <param name="Bundle">In which bundle the asset is in</param>
-    /// <param name="Pack">In which pack the bundle is in</param>
-    public record IndexedAsset(string Name, string FullName, BundleData Bundle, BundlePackData Pack);
+    /// <summary>An indexed asset</summary>
+    /// <param name="Name">Asset file name</param>
+    /// <param name="FullName">Asset container</param>
+    public record IndexedAsset(string Name, string FullName);
+    
+    /// <summary>An indexed bundle</summary>
+    /// <param name="Bundle">BundleData</param>
+    /// <param name="Pack">Pack in which the bundle is in</param>
+    /// <param name="Assets">Indexed assets</param>
+    public record IndexedBundle(BundleData Bundle, BundlePackData Pack, ImmutableArray<IndexedAsset> Assets);
 
     /// <summary>Search options</summary>
     [Flags] public enum SearchFlags
@@ -34,7 +35,7 @@ public interface IPatchIndexer
         Name = 1 << 0,
         /// <summary>Include <see cref="IndexedAsset.FullName"/> in the search</summary>
         FullName = 1 << 1,
-        /// <summary>Include <see cref="IndexedAsset.Bundle"/>.Name in the search</summary>
+        /// <summary>Include <see cref="IndexedBundle.Bundle"/>.Name in the search</summary>
         BundleName = 1 << 2,
         /// <summary>If the query string should be parsed as regex</summary>
         Regex = 1 << 3
