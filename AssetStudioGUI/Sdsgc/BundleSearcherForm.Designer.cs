@@ -38,7 +38,7 @@ partial class BundleSearcherForm
         _fullNameCheckBox = new System.Windows.Forms.CheckBox();
         _nameCheckBox = new System.Windows.Forms.CheckBox();
         _queryTextBox = new System.Windows.Forms.TextBox();
-        _resultsTreeView = new BundleSearcherForm.CheckBoxTreeView();
+        _resultsTreeView = new AssetStudioGUI.Sdsgc.BundleSearcherForm.CheckBoxTreeView();
         _bottomBar = new System.Windows.Forms.Panel();
         _downloadButton = new System.Windows.Forms.Button();
         _unselectAllButton = new System.Windows.Forms.Button();
@@ -164,6 +164,7 @@ partial class BundleSearcherForm
         _downloadButton.TabIndex = 2;
         _downloadButton.Text = "Download 0 bundles";
         _downloadButton.UseVisualStyleBackColor = true;
+        _downloadButton.Click += DownloadButton_Click;
         // 
         // _unselectAllButton
         // 

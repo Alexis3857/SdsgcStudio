@@ -43,14 +43,14 @@ public class TMIndexer : IPatchIndexer
             .Where(a => 
                 (flags.HasFlag(SearchFlags.Name) && isMatch(a.Name)) || 
                 (flags.HasFlag(SearchFlags.FullName) && isMatch(a.FullName)) || 
-                (flags.HasFlag(SearchFlags.BundleName) && isMatch(a.BundleName)))
-            .GroupBy(a => a.BundleName)
+                (flags.HasFlag(SearchFlags.BundleName) && isMatch(a.Bundle.Name)))
+            .GroupBy(a => a.Bundle.Name)
     ];
 
     private TMIndexer(IEnumerable<IndexedAsset> indexedAssets)
     {
         _indexedAssets = [.. indexedAssets];
-        BundleCount = _indexedAssets.Select(a => a.BundleName).Distinct().Count();
+        BundleCount = _indexedAssets.Select(a => a.Bundle).Distinct().Count();
         
         Logger.Verbose($"Indexed {BundleCount} bundles and {AssetCount} assets");
     }
@@ -59,10 +59,10 @@ public class TMIndexer : IPatchIndexer
     {
         Logger.Verbose($"Indexing {bundleData.Length} bundles");
         
-        Dictionary<string, string> packDict = [];
+        Dictionary<string, BundlePackData> packDict = [];
         foreach (var pack in packData)
-        foreach (var bundle in pack.IncludeBundles)
-            packDict.Add(bundle, pack.Name);
+            foreach (var bundle in pack.IncludeBundles)
+                packDict.Add(bundle, pack);
 
         // Find all assets that are either a texture or a model and create a TMIndexer instance from them
         return new TMIndexer(bundleData
@@ -70,6 +70,6 @@ public class TMIndexer : IPatchIndexer
                     a.EndsWith(".png", StringComparison.Ordinal) ||
                     a.EndsWith(".obj", StringComparison.Ordinal) ||
                     a.EndsWith(".prefab", StringComparison.Ordinal))
-                .Select(a => new IndexedAsset(Path.GetFileName(a), a, b.Name, b.Checksum, packDict[b.Checksum]))));
+                .Select(a => new IndexedAsset(Path.GetFileName(a), a, b, packDict[b.Checksum]))));
     }
 }

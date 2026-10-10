@@ -16,16 +16,15 @@ public interface IPatchIndexer
     /// <summary>Searches for assets that match the input</summary>
     /// <param name="query">Search string</param>
     /// <param name="flags">Search options</param>
-    /// <returns>Matching assets, grouped by <see cref="IndexedAsset.BundleName"/></returns>
+    /// <returns>Matching assets, grouped by <see cref="IndexedAsset.Bundle"/>.Name</returns>
     List<IGrouping<string, IndexedAsset>> Search(string query, SearchFlags flags);
     
     /// <summary>A single asset file</summary>
     /// <param name="Name">Asset name</param>
     /// <param name="FullName">Asset full name (container)</param>
-    /// <param name="BundleName">In which bundle the asset is in (<see cref="BundleData.Name"/>)</param>
-    /// <param name="BundleChecksum">Checksum of the bundle the asset is in (<see cref="BundleData.Checksum"/>)</param>
-    /// <param name="PackName">In which pack the bundle is in (<see cref="BundlePackData.Name"/>)</param>
-    public record IndexedAsset(string Name, string FullName, string BundleName, string BundleChecksum, string PackName);
+    /// <param name="Bundle">In which bundle the asset is in</param>
+    /// <param name="Pack">In which pack the bundle is in</param>
+    public record IndexedAsset(string Name, string FullName, BundleData Bundle, BundlePackData Pack);
 
     /// <summary>Search options</summary>
     [Flags] public enum SearchFlags
@@ -35,7 +34,7 @@ public interface IPatchIndexer
         Name = 1 << 0,
         /// <summary>Include <see cref="IndexedAsset.FullName"/> in the search</summary>
         FullName = 1 << 1,
-        /// <summary>Include <see cref="IndexedAsset.BundleName"/> in the search</summary>
+        /// <summary>Include <see cref="IndexedAsset.Bundle"/>.Name in the search</summary>
         BundleName = 1 << 2,
         /// <summary>If the query string should be parsed as regex</summary>
         Regex = 1 << 3

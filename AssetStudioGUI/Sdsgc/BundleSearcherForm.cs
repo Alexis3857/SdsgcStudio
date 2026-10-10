@@ -12,6 +12,9 @@ namespace AssetStudioGUI.Sdsgc;
 
 public partial class BundleSearcherForm : Form
 {
+    private const long OneGb = 1 << 30;
+    private const long DownloadWarningThreshold = 1 << 30;
+    
     // Only search if the user typed more than 2 chars
     private const int MinQueryLen = 2;
 
@@ -90,6 +93,17 @@ public partial class BundleSearcherForm : Form
     {
         foreach (var bundle in _resultsTreeView.Nodes.Cast<TreeNode>().Where(b => b.Checked))
             bundle.Checked = false;
+    }
+    
+    private void DownloadButton_Click(object sender, EventArgs e)
+    {
+        var selectedBundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToArray();
+        var downloadSize = selectedBundles.Select(n => n.Tag).Cast<IPatchIndexer.IndexedAsset>().Sum(a => a.Pack.Size);
+        if (downloadSize > DownloadWarningThreshold)
+        {
+            var gb = downloadSize / (double)(1L << 30);
+            MessageBox.Show($@"Attempting to download {gb:0.##} GB. Continue?", @"Confirm Download", MessageBoxButtons.YesNo);
+        }
     }
 
     // Show the results count and how many bundles are selected, and only enable the download and unselect buttons if at least one is
