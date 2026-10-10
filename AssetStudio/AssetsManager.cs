@@ -129,6 +129,27 @@ namespace AssetStudio
             Load(toReadFile);
         }
 
+        public void LoadFromStream(params (string name, Stream stream)[] streams)
+        {
+            Progress.Reset();
+            for (var i = 0; i < streams.Length; i++)
+            {
+                var (name, stream) = streams[i];
+                if (LoadFile(new FileReader(name, stream))) Progress.Report(i + 1, streams.Length);
+                else break;
+            }
+            
+            importFiles.Clear();
+            importFilesHash.Clear();
+            noexistFiles.Clear();
+            assetsFileListHash.Clear();
+            if (AssetsFileList.Count == 0)
+                return;
+
+            ReadAssets();
+            ProcessAssets();
+        }
+
         private void Load(string[] files)
         {
             foreach (var file in files)

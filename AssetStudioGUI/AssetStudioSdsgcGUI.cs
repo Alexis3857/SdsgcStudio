@@ -92,6 +92,10 @@ public partial class AssetStudioGUIForm
                 bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
             }
         });
+        
+        ResetForm();
+        await Task.Run(() => Studio.assetsManager.LoadFromStream([..bundles]));
+        BuildAssetStructures();
     }
     
     // Only enable the search button when all the text inputs of the menu are filled
