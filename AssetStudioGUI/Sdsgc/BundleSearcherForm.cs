@@ -84,8 +84,15 @@ public partial class BundleSearcherForm : Form
     private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Tag is IPatchIndexer.IndexedAsset;
 
     private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e) => RefreshResultsState();
-    
-    // Show the results count and how many bundles are selected, and only enable the download button if at least one is
+
+    // Uncheck every selected bundle, AfterCheck refreshes the results state
+    private void UnselectAllButton_Click(object sender, EventArgs e)
+    {
+        foreach (var bundle in _resultsTreeView.Nodes.Cast<TreeNode>().Where(b => b.Checked))
+            bundle.Checked = false;
+    }
+
+    // Show the results count and how many bundles are selected, and only enable the download and unselect buttons if at least one is
     private void RefreshResultsState()
     {
         var bundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToList();
@@ -93,6 +100,7 @@ public partial class BundleSearcherForm : Form
         _statusLabel.Text = bundles.Count == 0 ? "No results" : $"{bundles.Sum(b => b.Nodes.Count)} assets in {bundles.Count} bundles";
         _downloadButton.Text = $@"Download {selectedCount} bundles";
         _downloadButton.Enabled = selectedCount > 0;
+        _unselectAllButton.Enabled = selectedCount > 0;
     }
 
     #region Hide checkboxes in asset nodes

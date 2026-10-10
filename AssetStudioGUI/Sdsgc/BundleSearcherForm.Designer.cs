@@ -41,6 +41,7 @@ partial class BundleSearcherForm
         _resultsTreeView = new BundleSearcherForm.CheckBoxTreeView();
         _bottomBar = new System.Windows.Forms.Panel();
         _downloadButton = new System.Windows.Forms.Button();
+        _unselectAllButton = new System.Windows.Forms.Button();
         _statusLabel = new System.Windows.Forms.Label();
         _topbar.SuspendLayout();
         _bottomBar.SuspendLayout();
@@ -145,6 +146,7 @@ partial class BundleSearcherForm
         // _bottomBar
         // 
         _bottomBar.Controls.Add(_downloadButton);
+        _bottomBar.Controls.Add(_unselectAllButton);
         _bottomBar.Controls.Add(_statusLabel);
         _bottomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
         _bottomBar.Location = new System.Drawing.Point(0, 413);
@@ -159,9 +161,21 @@ partial class BundleSearcherForm
         _downloadButton.Location = new System.Drawing.Point(668, 6);
         _downloadButton.Name = "_downloadButton";
         _downloadButton.Size = new System.Drawing.Size(129, 25);
-        _downloadButton.TabIndex = 1;
+        _downloadButton.TabIndex = 2;
         _downloadButton.Text = "Download 0 bundles";
         _downloadButton.UseVisualStyleBackColor = true;
+        // 
+        // _unselectAllButton
+        // 
+        _unselectAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+        _unselectAllButton.Enabled = false;
+        _unselectAllButton.Location = new System.Drawing.Point(578, 6);
+        _unselectAllButton.Name = "_unselectAllButton";
+        _unselectAllButton.Size = new System.Drawing.Size(84, 25);
+        _unselectAllButton.TabIndex = 1;
+        _unselectAllButton.Text = "Unselect All";
+        _unselectAllButton.UseVisualStyleBackColor = true;
+        _unselectAllButton.Click += UnselectAllButton_Click;
         // 
         // _statusLabel
         // 
@@ -204,6 +218,7 @@ partial class BundleSearcherForm
 
     private System.Windows.Forms.Panel _bottomBar;
     private System.Windows.Forms.Label _statusLabel;
+    private System.Windows.Forms.Button _unselectAllButton;
     private System.Windows.Forms.Button _downloadButton;
 
     #endregion
