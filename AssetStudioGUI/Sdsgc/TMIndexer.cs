@@ -68,7 +68,7 @@ public class TMIndexer : IPatchIndexer
         return new TMIndexer(bundleData
             .SelectMany(b => b.Assets.Where(a =>
                     a.EndsWith(".png", StringComparison.Ordinal) ||
-                    a.EndsWith(".obj", StringComparison.Ordinal) ||
+                    a.EndsWith(".asset", StringComparison.Ordinal) ||
                     a.EndsWith(".prefab", StringComparison.Ordinal))
                 .Select(a => new IndexedAsset(Path.GetFileName(a), a, b, packDict[b.Checksum]))));
     }

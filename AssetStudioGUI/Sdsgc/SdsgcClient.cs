@@ -107,7 +107,8 @@ public class SdsgcClient(string patch, string version, string key)
                 continue;
             
             file.stream.Position = 0;
-            if (new FileReader(file.fileName, file.stream) is not { FileType: FileType.AssetsFile } subReader)
+            using var subReader = new FileReader(file.fileName, file.stream);
+            if (subReader.FileType != FileType.AssetsFile)
                 continue;
 
             var assetsFile = new SerializedFile(subReader, assetsManager);
