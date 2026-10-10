@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -12,7 +13,8 @@ namespace AssetStudioGUI.Sdsgc;
 public class SdsgcClient(string patch, string version, string key)
 {
     private static readonly HttpClient s_httpClient = new();
-
+    private static readonly ConcurrentDictionary<(string patch, string version), IPatchIndexer> s_indexerCache = [];
+    
     // nanagb = international version of the game
     // aos = android (other values are winos and ios)
     // m = the path that contains images and 3d models
@@ -20,6 +22,9 @@ public class SdsgcClient(string patch, string version, string key)
 
     public async Task<IPatchIndexer> GetPatchIndexAsync()
     {
+        if (s_indexerCache.TryGetValue((patch, version), out var cached))
+            return cached;
+        
         // Special Unity bundle name that acts as a manifest of all other Unity bundles
         await using var stream = await DownloadBundleAsync("bmdata");
         using var ms = new MemoryStream();
@@ -31,7 +36,9 @@ public class SdsgcClient(string patch, string version, string key)
         if (bundleDatas == null || bundlePackDatas == null)
             throw new Exception("Failed to export bmdata TextAsset");
 
-        return TMIndexer.Create(bundleDatas, bundlePackDatas);
+        var indexer = TMIndexer.Create(bundleDatas, bundlePackDatas);
+        s_indexerCache.TryAdd((patch, version), indexer);
+        return indexer;
     }
 
     /// <summary>Downloads a bundle</summary>
