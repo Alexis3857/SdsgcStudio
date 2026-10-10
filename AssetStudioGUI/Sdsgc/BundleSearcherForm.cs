@@ -72,23 +72,37 @@ public partial class BundleSearcherForm : Form
             _searchButton.Enabled = true;
         }
 
-        // Create the tree with bundle names as node and assets as children
+        // Create the tree with bundle names as node
+        // We add an empty asset node under each bundle node so it can be expanded
+        // The real asset nodes will be added on expand
         _resultsTreeView.BeginUpdate();
         _resultsTreeView.Nodes.Clear();
         foreach (var bundle in results)
         {
             var bundleNode = new TreeNode(bundle.Bundle.Name) { Tag = bundle, Checked = _selectedBundles.Contains(bundle) };
+            bundleNode.Nodes.Add(new TreeNode());
             _resultsTreeView.Nodes.Add(bundleNode);
-            foreach (var asset in bundle.Assets)
-            {
-                var assetNode = bundleNode.Nodes.Add(asset.FullName);
-                assetNode.Tag = asset;
-                HideCheckBox(assetNode);
-            }
         }
         _resultsTreeView.EndUpdate();
 
         RefreshResultsState();
+    }
+
+    // Replace the dummy child of a bundle node with its assets the first time it is expanded
+    private void ResultsTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+    {
+        if (e.Node is not { Tag: IPatchIndexer.IndexedBundle bundle, FirstNode.Tag: null } bundleNode)
+            return;
+
+        _resultsTreeView.BeginUpdate();
+        bundleNode.Nodes.Clear();
+        foreach (var asset in bundle.Assets)
+        {
+            var assetNode = bundleNode.Nodes.Add(asset.FullName);
+            assetNode.Tag = asset;
+            HideCheckBox(assetNode);
+        }
+        _resultsTreeView.EndUpdate();
     }
 
     // Only enable the search button if there is a query long enough, and at least one of the 3 search flag is checked

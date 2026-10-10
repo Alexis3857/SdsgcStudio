@@ -143,6 +143,7 @@ partial class BundleSearcherForm
         _resultsTreeView.TabIndex = 1;
         _resultsTreeView.BeforeCheck += ResultsTreeView_BeforeCheck;
         _resultsTreeView.AfterCheck += ResultsTreeView_AfterCheck;
+        _resultsTreeView.BeforeExpand += ResultsTreeView_BeforeExpand;
         // 
         // _bottomBar
         // 
