@@ -22,6 +22,12 @@ public partial class BundleSearcherForm : Form
 
     private readonly IPatchIndexer _indexer;
 
+    /// <summary>
+    /// Bundles selected when the user before closing the form<br/>
+    /// The <see cref="BundleData"/> can only be bundles from the <see cref="BundlePackData.IncludeBundles"/> of their key
+    /// </summary>
+    public ILookup<BundlePackData, BundleData> SelectedBundles { get; private set; }
+
     public BundleSearcherForm(IPatchIndexer indexer)
     {
         InitializeComponent();
@@ -69,7 +75,7 @@ public partial class BundleSearcherForm : Form
         foreach (var bundle in results)
         {
             var bundleNode = _resultsTreeView.Nodes.Add(bundle.Key);
-            bundleNode.Tag = bundle.First().Pack;
+            bundleNode.Tag = bundle.First();
             foreach (var asset in bundle)
             {
                 var assetNode = bundleNode.Nodes.Add(asset.FullName);
@@ -87,7 +93,7 @@ public partial class BundleSearcherForm : Form
         _searchButton.Enabled = _queryTextBox.Text.Length >= MinQueryLen && (_nameCheckBox.Checked || _fullNameCheckBox.Checked || _bundleNameCheckBox.Checked);
 
     // Prevent assets from being checked in the tree view
-    private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Tag is IPatchIndexer.IndexedAsset;
+    private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Parent is not null;
 
     private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e) => RefreshResultsState();
 
@@ -100,21 +106,23 @@ public partial class BundleSearcherForm : Form
     
     private void DownloadButton_Click(object sender, EventArgs e)
     {
-        // Retrieve all checked items
-        var selectedPacks = _resultsTreeView.Nodes.Cast<TreeNode>()
+        // Retrieve all checked bundles grouped by pack, since packs contain several bundles
+        var selectedBundles = _resultsTreeView.Nodes.Cast<TreeNode>()
             .Where(b => b.Checked)
-            .Select(b => (BundlePackData)b.Tag)
-            .Distinct()  // Packs contain several bundles so there could be duplicates
-            .ToArray();
-        
+            .Select(b => (IPatchIndexer.IndexedAsset)b.Tag!)
+            .ToLookup(a => a.Pack, a => a.Bundle);
+
         // If the download size is too big a confirmation MessageBox will appear
-        var downloadSize = selectedPacks.Sum(p => p.Size);
+        var downloadSize = selectedBundles.Sum(p => p.Key.Size);
         if (downloadSize > DownloadWarningThreshold)
         {
             var gb = downloadSize / (double)OneGb;
             if (MessageBox.Show($@"Attempting to download {gb:0.##} GB. Continue?", @"Confirm Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) 
                 return;
         }
+
+        SelectedBundles = selectedBundles;
+        DialogResult = DialogResult.OK;  // Close the form
     }
 
     // Show the results count and how many bundles are selected, and only enable the download and unselect buttons if at least one is

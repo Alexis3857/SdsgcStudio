@@ -58,8 +58,9 @@ public partial class AssetStudioGUIForm
     {
         var client = new SdsgcClient(_sdsgcPatchTextBox.Text, _sdsgcVersionTextBox.Text, _sdsgcKeyTextBox.Text);
         var indexer = await client.GetPatchIndexAsync();
-        var searchForm = new BundleSearcherForm(indexer);
-        await searchForm.ShowAsync(this);
+        using var searchForm = new BundleSearcherForm(indexer);
+        if (await searchForm.ShowDialogAsync(this) != DialogResult.OK || searchForm.SelectedBundles is not { Count: > 0 } bundles)
+            return;
     }
     
     // Only enable the search button when all the text inputs of the menu are filled
