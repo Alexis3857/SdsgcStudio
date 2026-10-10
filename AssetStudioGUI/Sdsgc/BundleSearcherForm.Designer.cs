@@ -42,6 +42,7 @@ partial class BundleSearcherForm
         _bottomBar = new System.Windows.Forms.Panel();
         _downloadButton = new System.Windows.Forms.Button();
         _unselectAllButton = new System.Windows.Forms.Button();
+        _selectAllButton = new System.Windows.Forms.Button();
         _statusLabel = new System.Windows.Forms.Label();
         _topbar.SuspendLayout();
         _bottomBar.SuspendLayout();
@@ -147,6 +148,7 @@ partial class BundleSearcherForm
         // 
         _bottomBar.Controls.Add(_downloadButton);
         _bottomBar.Controls.Add(_unselectAllButton);
+        _bottomBar.Controls.Add(_selectAllButton);
         _bottomBar.Controls.Add(_statusLabel);
         _bottomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
         _bottomBar.Location = new System.Drawing.Point(0, 413);
@@ -158,11 +160,11 @@ partial class BundleSearcherForm
         // 
         _downloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
         _downloadButton.Enabled = false;
-        _downloadButton.Location = new System.Drawing.Point(668, 6);
+        _downloadButton.Location = new System.Drawing.Point(642, 6);
         _downloadButton.Name = "_downloadButton";
-        _downloadButton.Size = new System.Drawing.Size(129, 25);
-        _downloadButton.TabIndex = 2;
-        _downloadButton.Text = "Download 0 bundles";
+        _downloadButton.Size = new System.Drawing.Size(155, 25);
+        _downloadButton.TabIndex = 3;
+        _downloadButton.Text = "Download 0 Bundles";
         _downloadButton.UseVisualStyleBackColor = true;
         _downloadButton.Click += DownloadButton_Click;
         // 
@@ -170,13 +172,25 @@ partial class BundleSearcherForm
         // 
         _unselectAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
         _unselectAllButton.Enabled = false;
-        _unselectAllButton.Location = new System.Drawing.Point(578, 6);
+        _unselectAllButton.Location = new System.Drawing.Point(552, 6);
         _unselectAllButton.Name = "_unselectAllButton";
         _unselectAllButton.Size = new System.Drawing.Size(84, 25);
-        _unselectAllButton.TabIndex = 1;
+        _unselectAllButton.TabIndex = 2;
         _unselectAllButton.Text = "Unselect All";
         _unselectAllButton.UseVisualStyleBackColor = true;
         _unselectAllButton.Click += UnselectAllButton_Click;
+        // 
+        // _selectAllButton
+        // 
+        _selectAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+        _selectAllButton.Enabled = false;
+        _selectAllButton.Location = new System.Drawing.Point(462, 6);
+        _selectAllButton.Name = "_selectAllButton";
+        _selectAllButton.Size = new System.Drawing.Size(84, 25);
+        _selectAllButton.TabIndex = 1;
+        _selectAllButton.Text = "Select All";
+        _selectAllButton.UseVisualStyleBackColor = true;
+        _selectAllButton.Click += SelectAllButton_Click;
         // 
         // _statusLabel
         // 
@@ -219,6 +233,7 @@ partial class BundleSearcherForm
 
     private System.Windows.Forms.Panel _bottomBar;
     private System.Windows.Forms.Label _statusLabel;
+    private System.Windows.Forms.Button _selectAllButton;
     private System.Windows.Forms.Button _unselectAllButton;
     private System.Windows.Forms.Button _downloadButton;
 
