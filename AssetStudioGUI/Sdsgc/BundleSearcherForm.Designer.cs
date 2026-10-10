@@ -139,6 +139,7 @@ partial class BundleSearcherForm
         _resultsTreeView.Name = "_resultsTreeView";
         _resultsTreeView.Size = new System.Drawing.Size(800, 382);
         _resultsTreeView.TabIndex = 1;
+        _resultsTreeView.BeforeCheck += ResultsTreeView_BeforeCheck;
         // 
         // _bottomBar
         // 

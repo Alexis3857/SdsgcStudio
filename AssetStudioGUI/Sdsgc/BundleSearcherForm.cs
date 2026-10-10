@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -64,7 +65,11 @@ public partial class BundleSearcherForm : Form
         {
             var bundleNode = _resultsTreeView.Nodes.Add(bundle.Key);
             foreach (var asset in bundle)
-                bundleNode.Nodes.Add(asset.FullName).Tag = asset;
+            {
+                var assetNode = bundleNode.Nodes.Add(asset.FullName);
+                assetNode.Tag = asset;
+                HideCheckBox(assetNode);
+            }
         }
         _resultsTreeView.EndUpdate();
 
@@ -73,5 +78,49 @@ public partial class BundleSearcherForm : Form
 
     // Only enable the search button if there is a query long enough, and at least one of the 3 search flag is checked
     private void RefreshSearchButtonState(object sender, EventArgs e) => 
-        _searchButton.Enabled = _queryTextBox.Text.Length >= MinQueryLen && (_nameCheckBox.Enabled || _fullNameCheckBox.Checked || _bundleNameCheckBox.Checked);
+        _searchButton.Enabled = _queryTextBox.Text.Length >= MinQueryLen && (_nameCheckBox.Checked || _fullNameCheckBox.Checked || _bundleNameCheckBox.Checked);
+
+    // Prevent assets from being checked in the tree view
+    private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Tag is IPatchIndexer.IndexedAsset;
+
+    #region Hide checkboxes in asset nodes
+    
+    // I have no idea
+
+    private const int TvmSetItemW = 0x1100 + 63;
+    private const uint TvifState = 0x8;
+    private const uint TvifHandle = 0x10;
+    private const uint TvisStateImageMask = 0xF000;
+    
+    private void HideCheckBox(TreeNode node)
+    {
+        var item = new TvItem
+        {
+            Mask = TvifHandle | TvifState,
+            HItem = node.Handle,
+            StateMask = TvisStateImageMask,
+            State = 0
+        };
+        SendMessage(_resultsTreeView.Handle, TvmSetItemW, IntPtr.Zero, ref item);
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private struct TvItem
+    {
+        public uint Mask;
+        public IntPtr HItem;
+        public uint State;
+        public uint StateMask;
+        public IntPtr Text;
+        public int TextMax;
+        public int Image;
+        public int SelectedImage;
+        public int Children;
+        public IntPtr LParam;
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, ref TvItem lParam);
+
+    #endregion
 }
