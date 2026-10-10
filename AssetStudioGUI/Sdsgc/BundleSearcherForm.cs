@@ -12,8 +12,10 @@ namespace AssetStudioGUI.Sdsgc;
 
 public partial class BundleSearcherForm : Form
 {
-    private const long OneGb = 1 << 30;
-    private const long DownloadWarningThreshold = 1 << 30;
+    private const long OneGb = 1 << 30;  // 1 gb in bytes
+    
+    // If the user tries to download more than DownloadWarningThreshold, a confirmation MessageBox will appear
+    private const long DownloadWarningThreshold = OneGb;
     
     // Only search if the user typed more than 2 chars
     private const int MinQueryLen = 2;
@@ -67,6 +69,7 @@ public partial class BundleSearcherForm : Form
         foreach (var bundle in results)
         {
             var bundleNode = _resultsTreeView.Nodes.Add(bundle.Key);
+            bundleNode.Tag = bundle.First().Pack;
             foreach (var asset in bundle)
             {
                 var assetNode = bundleNode.Nodes.Add(asset.FullName);
@@ -97,12 +100,20 @@ public partial class BundleSearcherForm : Form
     
     private void DownloadButton_Click(object sender, EventArgs e)
     {
-        var selectedBundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToArray();
-        var downloadSize = selectedBundles.Select(n => n.Tag).Cast<IPatchIndexer.IndexedAsset>().Sum(a => a.Pack.Size);
+        // Retrieve all checked items
+        var selectedPacks = _resultsTreeView.Nodes.Cast<TreeNode>()
+            .Where(b => b.Checked)
+            .Select(b => (BundlePackData)b.Tag)
+            .Distinct()  // Packs contain several bundles so there could be duplicates
+            .ToArray();
+        
+        // If the download size is too big a confirmation MessageBox will appear
+        var downloadSize = selectedPacks.Sum(p => p.Size);
         if (downloadSize > DownloadWarningThreshold)
         {
-            var gb = downloadSize / (double)(1L << 30);
-            MessageBox.Show($@"Attempting to download {gb:0.##} GB. Continue?", @"Confirm Download", MessageBoxButtons.YesNo);
+            var gb = downloadSize / (double)OneGb;
+            if (MessageBox.Show($@"Attempting to download {gb:0.##} GB. Continue?", @"Confirm Download", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) 
+                return;
         }
     }
 
