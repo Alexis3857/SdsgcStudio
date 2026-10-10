@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AssetStudio;
@@ -74,6 +75,9 @@ public partial class AssetStudioGUIForm
         // Save their content in a Stream so no file is created in the process
         Logger.Verbose($"Downloading {packs.Count} packs");
         var bundles = new ConcurrentBag<(string Name, Stream Stream)>();
+        var downloadedPackCount = 0;
+        var progressLock = new Lock();
+        Progress.Reset();
         await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount }, async (pack, ct) =>
         {
             await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
@@ -91,6 +95,11 @@ public partial class AssetStudioGUIForm
                 await unzipped.ReadExactlyAsync(bundleContent, ct);
                 bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
             }
+            
+            // Report the download to the progress bar
+            // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
+            lock (progressLock)
+                Progress.Report(++downloadedPackCount, packs.Count);
         });
         
         ResetForm();
