@@ -72,6 +72,19 @@ public class SdsgcClient(string patch, string version, string key)
             throw new CryptographicException($"Failed to decrypt data, the key {key} is probably incorrect.");
         }
     }
+    
+    // The bundles have fake headers that have to be deleted so they can be loaded
+    public static byte[] FixFakeHeader(byte[] fileContent)
+    {
+        const int LengthIndex = 0x37;  // The length of the real bundle is stored as an int at fileContent[0x37]
+        var signature = "UnityArchive"u8;  // Every fake header bundle start by "UnityArchive"
+
+        if (fileContent.Length < LengthIndex + sizeof(int) || !fileContent.AsSpan(0, signature.Length).SequenceEqual(signature))
+            return fileContent;
+    
+        var bundleSize = System.Buffers.Binary.BinaryPrimitives.ReadInt32LittleEndian(fileContent.AsSpan(LengthIndex, sizeof(int)));
+        return fileContent[^bundleSize..];  // Extract last bundleSize bytes from fileContent
+    }
 
     /// <summary>Tries to export the <see cref="BundleData"/> and the <see cref="BundlePackData"/> from a bmdata</summary>
     /// <param name="bmdata">Decrypted bmdata</param>
