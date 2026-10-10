@@ -22,6 +22,9 @@ public partial class BundleSearcherForm : Form
 
     private readonly IPatchIndexer _indexer;
 
+    // Bundles selected by the user with their pack, kept across searches
+    private readonly Dictionary<BundleData, BundlePackData> _selectedBundles = [];
+
     /// <summary>
     /// Bundles selected when the user before closing the form<br/>
     /// The <see cref="BundleData"/> can only be bundles from the <see cref="BundlePackData.IncludeBundles"/> of their key
@@ -74,8 +77,9 @@ public partial class BundleSearcherForm : Form
         _resultsTreeView.Nodes.Clear();
         foreach (var bundle in results)
         {
-            var bundleNode = _resultsTreeView.Nodes.Add(bundle.Key);
-            bundleNode.Tag = bundle.First();
+            var bundleAsset = bundle.First();
+            var bundleNode = new TreeNode(bundle.Key) { Tag = bundleAsset, Checked = _selectedBundles.ContainsKey(bundleAsset.Bundle) };
+            _resultsTreeView.Nodes.Add(bundleNode);
             foreach (var asset in bundle)
             {
                 var assetNode = bundleNode.Nodes.Add(asset.FullName);
@@ -95,29 +99,37 @@ public partial class BundleSearcherForm : Form
     // Prevent assets from being checked in the tree view
     private void ResultsTreeView_BeforeCheck(object sender, TreeViewCancelEventArgs e) => e.Cancel = e.Node?.Parent is not null;
 
-    private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e) => RefreshResultsState();
+    // Only bundle nodes reach AfterCheck, since BeforeCheck cancels assets
+    private void ResultsTreeView_AfterCheck(object sender, TreeViewEventArgs e)
+    {
+        var asset = (IPatchIndexer.IndexedAsset)e.Node!.Tag!;
+        if (e.Node.Checked) _selectedBundles[asset.Bundle] = asset.Pack;
+        else _selectedBundles.Remove(asset.Bundle);
 
-    // Check every unselected bundle, AfterCheck refreshes the results state
+        RefreshResultsState();
+    }
+
+    // Check every unselected bundle in the results, AfterCheck refreshes the results state
     private void SelectAllButton_Click(object sender, EventArgs e)
     {
         foreach (var bundle in _resultsTreeView.Nodes.Cast<TreeNode>().Where(b => !b.Checked))
             bundle.Checked = true;
     }
 
-    // Uncheck every selected bundle, AfterCheck refreshes the results state
+    // Unselect every bundle, including the ones selected in previous searches
     private void UnselectAllButton_Click(object sender, EventArgs e)
     {
+        _selectedBundles.Clear();
         foreach (var bundle in _resultsTreeView.Nodes.Cast<TreeNode>().Where(b => b.Checked))
             bundle.Checked = false;
+
+        RefreshResultsState();
     }
-    
+
     private void DownloadButton_Click(object sender, EventArgs e)
     {
-        // Retrieve all checked bundles grouped by pack, since packs contain several bundles
-        var selectedBundles = _resultsTreeView.Nodes.Cast<TreeNode>()
-            .Where(b => b.Checked)
-            .Select(b => (IPatchIndexer.IndexedAsset)b.Tag!)
-            .ToLookup(a => a.Pack, a => a.Bundle);
+        // Group the selected bundles by pack, since packs contain several bundles
+        var selectedBundles = _selectedBundles.ToLookup(b => b.Value, b => b.Key);
 
         // If the download size is too big a confirmation MessageBox will appear
         var downloadSize = selectedBundles.Sum(p => p.Key.Size);
@@ -133,15 +145,15 @@ public partial class BundleSearcherForm : Form
     }
 
     // Show the results count and how many bundles are selected, and only enable the download and unselect buttons if at least one is
-    // The select button is only enabled if at least one bundle is not selected
+    // The select button is only enabled if at least one bundle in the results is not selected
     private void RefreshResultsState()
     {
         var bundles = _resultsTreeView.Nodes.Cast<TreeNode>().ToList();
-        var selectedCount = bundles.Count(b => b.Checked);
+        var selectedCount = _selectedBundles.Count;
         _statusLabel.Text = bundles.Count == 0 ? "No results" : $"{bundles.Sum(b => b.Nodes.Count)} assets in {bundles.Count} bundles";
         _downloadButton.Text = $@"Download {selectedCount} Bundles";
         _downloadButton.Enabled = selectedCount > 0;
-        _selectAllButton.Enabled = selectedCount < bundles.Count;
+        _selectAllButton.Enabled = bundles.Any(b => !b.Checked);
         _unselectAllButton.Enabled = selectedCount > 0;
     }
 
