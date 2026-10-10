@@ -64,6 +64,7 @@ public partial class AssetStudioGUIForm
     // Event called when the user clicks on _sdsgcSearchBundlesMenuItem
     private async void SdsgcSearchBundles_Click(object sender, EventArgs e)
     {
+        _sdsgcMenu.Enabled = false;
         try
         {
             // Download the bundles manifest and show the form to let the user pick
@@ -81,38 +82,44 @@ public partial class AssetStudioGUIForm
             var downloadedPackCount = 0;
             var progressLock = new Lock();
             Progress.Reset();
-            await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount }, async (pack, ct) => 
-            { 
-                await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
-                await using var zip = new ZipArchive(packStream);
-                foreach (var bundle in pack)
+            await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount },
+                async (pack, ct) =>
                 {
-                    if (zip.GetEntry(bundle.Checksum) is not { } entry)
+                    await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
+                    await using var zip = new ZipArchive(packStream);
+                    foreach (var bundle in pack)
                     {
-                        Logger.Warning($"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
-                        continue;
+                        if (zip.GetEntry(bundle.Checksum) is not { } entry)
+                        {
+                            Logger.Warning(
+                                $"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
+                            continue;
+                        }
+
+                        await using var unzipped = await entry.OpenAsync(ct);
+                        var bundleContent = new byte[entry.Length];
+                        await unzipped.ReadExactlyAsync(bundleContent, ct);
+                        bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
                     }
 
-                    await using var unzipped = await entry.OpenAsync(ct);
-                    var bundleContent = new byte[entry.Length];
-                    await unzipped.ReadExactlyAsync(bundleContent, ct);
-                    bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
-                }
-
-                // Report the download to the progress bar
-                // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
-                lock (progressLock)
-                    Progress.Report(++downloadedPackCount, packs.Count);
-            });
+                    // Report the download to the progress bar
+                    // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
+                    lock (progressLock)
+                        Progress.Report(++downloadedPackCount, packs.Count);
+                });
 
             ResetForm();
-            await Task.Run(() => Studio.assetsManager.LoadFromStream([..bundles]));
+            await Task.Run(() => Studio.assetsManager.LoadFromStream([.. bundles]));
             BuildAssetStructures();
         }
         catch (Exception ex)
         {
             Progress.Reset();
             Logger.Error(ex.Message);
+        }
+        finally
+        {
+            _sdsgcMenu.Enabled = true;
         }
     }
     
