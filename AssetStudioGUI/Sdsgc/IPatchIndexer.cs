@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AssetStudioGUI.Sdsgc;
 
@@ -19,12 +18,6 @@ public interface IPatchIndexer
     /// <param name="flags">Search options</param>
     /// <returns>Matching assets, grouped by <see cref="IndexedAsset.BundleName"/></returns>
     List<IGrouping<string, IndexedAsset>> Search(string query, SearchFlags flags);
-
-    /// <summary>Searches for assets that match the input</summary>
-    /// <param name="query">Search regex</param>
-    /// <param name="flags">Search options</param>
-    /// <returns>Matching assets, grouped by <see cref="IndexedAsset.BundleName"/></returns>
-    List<IGrouping<string, IndexedAsset>> Search(Regex query, SearchFlags flags);
     
     /// <summary>A single asset file</summary>
     /// <param name="Name">Asset name</param>
@@ -43,6 +36,8 @@ public interface IPatchIndexer
         /// <summary>Include <see cref="IndexedAsset.FullName"/> in the search</summary>
         FullName = 1 << 1,
         /// <summary>Include <see cref="IndexedAsset.BundleName"/> in the search</summary>
-        BundleName = 1 << 2
+        BundleName = 1 << 2,
+        /// <summary>If the query string should be parsed as regex</summary>
+        Regex = 1 << 3
     }
 }

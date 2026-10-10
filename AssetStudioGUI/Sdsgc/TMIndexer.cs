@@ -23,6 +23,12 @@ public class TMIndexer : IPatchIndexer
     {
         if (query == string.Empty)
             return [];
+
+        if (flags.HasFlag(SearchFlags.Regex))
+        {
+            var regex = new Regex(query);
+            return Search(regex.IsMatch, flags);
+        }
         
         // Name is a suffix of FullName, so a substring match on Name implies one on FullName
         if (flags.HasFlag(SearchFlags.FullName))
@@ -30,8 +36,6 @@ public class TMIndexer : IPatchIndexer
 
         return Search(s => s.Contains(query, StringComparison.OrdinalIgnoreCase), flags);
     }
-
-    public List<IGrouping<string, IndexedAsset>> Search(Regex query, SearchFlags flags) => Search(query.IsMatch, flags);
 
     private List<IGrouping<string, IndexedAsset>> Search(Func<string, bool> isMatch, SearchFlags flags) =>
     [
