@@ -64,47 +64,56 @@ public partial class AssetStudioGUIForm
     // Event called when the user clicks on _sdsgcSearchBundlesMenuItem
     private async void SdsgcSearchBundles_Click(object sender, EventArgs e)
     {
-        // Download the bundles manifest and show the form to let the user pick
-        var client = new SdsgcClient(_sdsgcPatchTextBox.Text, _sdsgcVersionTextBox.Text, _sdsgcKeyTextBox.Text);
-        var indexer = await client.GetPatchIndexAsync();
-        using var searchForm = new BundleSearcherForm(indexer);
-        if (await searchForm.ShowDialogAsync(this) != DialogResult.OK || searchForm.SelectedBundles is not { Count: > 0 } packs)
-            return;
-
-        // Download the packs and unzip the needed bundles only
-        // Save their content in a Stream so no file is created in the process
-        Logger.Verbose($"Downloading {packs.Count} packs");
-        var bundles = new ConcurrentBag<(string Name, Stream Stream)>();
-        var downloadedPackCount = 0;
-        var progressLock = new Lock();
-        Progress.Reset();
-        await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount }, async (pack, ct) =>
+        try
         {
-            await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
-            await using var zip = new ZipArchive(packStream);
-            foreach (var bundle in pack)
-            {
-                if (zip.GetEntry(bundle.Checksum) is not { } entry)
+            // Download the bundles manifest and show the form to let the user pick
+            var client = new SdsgcClient(_sdsgcPatchTextBox.Text, _sdsgcVersionTextBox.Text, _sdsgcKeyTextBox.Text);
+            var indexer = await client.GetPatchIndexAsync();
+            using var searchForm = new BundleSearcherForm(indexer);
+            if (await searchForm.ShowDialogAsync(this) != DialogResult.OK ||
+                searchForm.SelectedBundles is not { Count: > 0 } packs)
+                return;
+
+            // Download the packs and unzip the needed bundles only
+            // Save their content in a Stream so no file is created in the process
+            Logger.Verbose($"Downloading {packs.Count} packs");
+            var bundles = new ConcurrentBag<(string Name, Stream Stream)>();
+            var downloadedPackCount = 0;
+            var progressLock = new Lock();
+            Progress.Reset();
+            await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount }, async (pack, ct) => 
+            { 
+                await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
+                await using var zip = new ZipArchive(packStream);
+                foreach (var bundle in pack)
                 {
-                    Logger.Warning($"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
-                    continue;
+                    if (zip.GetEntry(bundle.Checksum) is not { } entry)
+                    {
+                        Logger.Warning($"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
+                        continue;
+                    }
+
+                    await using var unzipped = await entry.OpenAsync(ct);
+                    var bundleContent = new byte[entry.Length];
+                    await unzipped.ReadExactlyAsync(bundleContent, ct);
+                    bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
                 }
 
-                await using var unzipped = await entry.OpenAsync(ct);
-                var bundleContent = new byte[entry.Length];
-                await unzipped.ReadExactlyAsync(bundleContent, ct);
-                bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
-            }
-            
-            // Report the download to the progress bar
-            // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
-            lock (progressLock)
-                Progress.Report(++downloadedPackCount, packs.Count);
-        });
-        
-        ResetForm();
-        await Task.Run(() => Studio.assetsManager.LoadFromStream([..bundles]));
-        BuildAssetStructures();
+                // Report the download to the progress bar
+                // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
+                lock (progressLock)
+                    Progress.Report(++downloadedPackCount, packs.Count);
+            });
+
+            ResetForm();
+            await Task.Run(() => Studio.assetsManager.LoadFromStream([..bundles]));
+            BuildAssetStructures();
+        }
+        catch (Exception ex)
+        {
+            Progress.Reset();
+            Logger.Error(ex.Message);
+        }
     }
     
     // Only enable the search button when all the text inputs of the menu are filled
