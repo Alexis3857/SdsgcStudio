@@ -111,6 +111,6 @@ public partial class AssetStudioGUIForm
     {
         BorderStyle = BorderStyle.FixedSingle,
         Font = new Font("Segoe UI", 9F),
-        Size = new Size(300, 23)
+        Size = new Size(200, 23)
     };
 }
