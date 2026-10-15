@@ -8,6 +8,13 @@
 
 A new `Sdsgc` menu allows downloading and loading Unity bundles from the game without requiring the game to be installed.  
 Open the `Sdsgc` menu, set the `Patch` code, `Version` and decryption `Key` and click on `Search bundles`.  
+
+<img width="346" height="244" alt="image" src="https://github.com/user-attachments/assets/8c497e3e-98e9-4e8b-b345-1147d476bb29" />
+
+To find the values to input, go to [7dsHub](https://7dshub.com/), scroll to the bottom and paste the 3 lines in the same order.  
+
+<img width="328" height="67" alt="image" src="https://github.com/user-attachments/assets/dfcb775c-9e25-4be1-a6fb-793e9b524412" />
+
 A new form will appear allowing you to search assets with several options:
 - Name
 - Container
@@ -18,8 +25,9 @@ After performing a search, bundles that have at least one asset matching your qu
 Once you are done selecting, click on `Download x Bundles` and wait for the bundles to finish importing.  
 You can then use AssetStudio like you normally would with the files.  
 
+<img width="814" height="495" alt="image" src="https://github.com/user-attachments/assets/cde99b9d-a776-4258-b40e-d153f7cc3594" />
+
 Notes:
-- I will provide an easy way to find the game patch/version/key, for now you can use `k7RmQ2xTb9Lw4` as patch, `5051` as version and `VU2-1OnAPyPUuHCrtMsOA1_a7Kt6-bNO` as key.
 - An internet connection is required to use the Sdsgc menu.
 - Bundles are kept in memory and never written to disk, so `Show original file` does nothing for them.
 - AssetStudio can still be used like the original one for other Unity bundles, this fork only adds a menu to make looking for Sdsgc files more convenient.
