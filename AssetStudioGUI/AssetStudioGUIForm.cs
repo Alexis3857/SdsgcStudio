@@ -1,5 +1,5 @@
 ﻿using AssetStudio;
-using Newtonsoft.Json;
+using AssetStudio.Addons.CubismLive2D;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,8 @@ namespace AssetStudioGUI
         private DirectBitmap imageTexture;
         private string tempClipboard;
         private bool isDarkMode;
+        private GameOptionsForm gameOptionsForm;
+        private bool showAssetDebugInfo;
 
         #region FMODControl
         private FMOD.System system;
@@ -52,7 +54,9 @@ namespace AssetStudioGUI
         #endregion
 
         #region SpriteControl
-        private SpriteMaskMode spriteMaskVisibleMode = SpriteMaskMode.On;
+        private SpriteMaskMode spriteMaskVisibleMode = SpriteMaskMode.Preview;
+        private bool spriteRenderWithOrigSize = true;
+        private bool spriteRednerWithBorder;
         #endregion
 
         #region TexControl
@@ -126,13 +130,14 @@ namespace AssetStudioGUI
         private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont, IntPtr pdv, [In] ref uint pcFonts);
 
         private string guiTitle;
+        private float guiFontHeight = 16.0f;
 
         public AssetStudioGUIForm()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             ConsoleWindow.RunConsole(Properties.Settings.Default.showConsole);
             InitializeComponent();
-            ApplyColorTheme(out isDarkMode);
+            ApplyColorTheme();
 
             var appAssembly = typeof(Program).Assembly.GetName();
             guiTitle = $"{appAssembly.Name} v{appAssembly.Version}";
@@ -140,24 +145,26 @@ namespace AssetStudioGUI
 
             delayTimer = new System.Timers.Timer(800);
             delayTimer.Elapsed += delayTimer_Elapsed;
+
             displayAll.Checked = Properties.Settings.Default.displayAll;
-            displayInfo.Checked = Properties.Settings.Default.displayInfo;
+            parseByTypetreeToolStripMenuItem.Checked = Properties.Settings.Default.useTypetreeLoading;
+            decompressBundlesToDiskToolStripMenuItem.Checked = Properties.Settings.Default.decompressToDisk;
+            buildSceneHierarchyToolStripMenuItem.Checked = Properties.Settings.Default.buildTreeStructure;
             enablePreview.Checked = Properties.Settings.Default.enablePreview;
-            showConsoleToolStripMenuItem.Checked = Properties.Settings.Default.showConsole;
-            buildTreeStructureToolStripMenuItem.Checked = Properties.Settings.Default.buildTreeStructure;
-            useAssetLoadingViaTypetreeToolStripMenuItem.Checked = Properties.Settings.Default.useTypetreeLoading;
-            useDumpTreeViewToolStripMenuItem.Checked = Properties.Settings.Default.useDumpTreeView;
+            displayInfo.Checked = Properties.Settings.Default.displayInfo;
             autoPlayAudioAssetsToolStripMenuItem.Checked = Properties.Settings.Default.autoplayAudio;
-            meshLazyLoadToolStripMenuItem.Checked = Properties.Settings.Default.meshLazyLoad;
-            customBlockCompressionComboBox.SelectedIndex = 0;
-            customBlockInfoCompressionComboBox.SelectedIndex = 0;
-            assetsManager.Options.BundleOptions.DecompressToDisk = Properties.Settings.Default.decompressToDisk;
+            useDumpTreeViewToolStripMenuItem.Checked = Properties.Settings.Default.useDumpTreeView;
+
+            assetsManager.Options.CustomCachePath = GetCachePath();
+            assetsManager.Options.MeshPreProcessing = Properties.Settings.Default.meshPreProcessing;
+            assetsManager.Options.GameSpecific.UnityVersionChanged += OnUnityVersionChanged;
+            
             FMODinit();
             listSearchFilterMode.SelectedIndex = 0;
-            FbxInitOptions(Properties.Settings.Default.fbxSettings);
 
             logger = new GUILogger(StatusStripUpdate);
             Logger.Default = logger;
+            showConsoleToolStripMenuItem.Checked = Properties.Settings.Default.showConsole;
             writeLogToFileToolStripMenuItem.Checked = Properties.Settings.Default.useFileLogger;
 
             progressBarTextFont = new System.Drawing.Font(FontFamily.GenericSansSerif, 8);
@@ -172,7 +179,19 @@ namespace AssetStudioGUI
             Progress.SetInstance(index: 1, new Progress<int>(SetProgressBarStringValue));
             Studio.StatusStripUpdate = StatusStripUpdate;
 
+            unityVersionStatusLabel.Visible = false;
             InitializeSdsgcMenu();
+        }
+
+        private static string GetCachePath()
+        {
+            var path = Properties.Settings.Default.cachePath;
+            if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
+            {
+                path = Path.Combine(Directory.GetCurrentDirectory(), "temp");
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
 
         private void AssetStudioGUIForm_DragEnter(object sender, DragEventArgs e)
@@ -313,7 +332,7 @@ namespace AssetStudioGUI
 
             var types = new SortedSet<string>();
             types.UnionWith(exportableAssets.Select(x => x.TypeString));
-            if (Studio.l2dModelDict.Count > 0)
+            if (Studio.l2dAssetsManager.ModelDict.Count > 0)
             {
                 types.Add("MonoBehaviour (Live2D Model)");
             }
@@ -331,10 +350,7 @@ namespace AssetStudioGUI
             }
             allToolStripMenuItem.Checked = true;
             var log = $"Finished loading {assetsManager.AssetsFileList.Count} file(s) with {assetListView.Items.Count} exportable assets";
-            var unityVer = assetsManager.AssetsFileList[0].version;
-            var m_ObjectsCount = unityVer > 2020
-                ? assetsManager.AssetsFileList.Sum(x => x.m_Objects.LongCount(y => y.classID != (int)ClassIDType.Shader))
-                : assetsManager.AssetsFileList.Sum(x => x.m_Objects.Count);
+            var m_ObjectsCount = assetsManager.AssetsFileList.Sum(x => x.m_Objects.Count);
             var objectsCount = assetsManager.AssetsFileList.Sum(x => x.Objects.Count);
             if (m_ObjectsCount != objectsCount)
             {
@@ -431,16 +447,25 @@ namespace AssetStudioGUI
                                 break;
                         }
                     }
-                    else if (lastSelectedItem?.Type == ClassIDType.Sprite && !((Sprite)lastSelectedItem.Asset).m_RD.alphaTexture.IsNull)
+                    else if (lastSelectedItem?.Asset is Sprite m_Sprite)
                     {
+                        var spriteConverter = new SpriteConverter(m_Sprite);
                         switch (e.KeyCode)
                         {
-                            case Keys.A:
-                                spriteMaskVisibleMode = spriteMaskVisibleMode == SpriteMaskMode.On ? SpriteMaskMode.Off : SpriteMaskMode.On;
+                            case Keys.R:
+                                spriteRenderWithOrigSize = !spriteRenderWithOrigSize;
                                 need = true;
                                 break;
-                            case Keys.M:
-                                spriteMaskVisibleMode = spriteMaskVisibleMode == SpriteMaskMode.MaskOnly ? SpriteMaskMode.On : SpriteMaskMode.MaskOnly;
+                            case Keys.B:
+                                spriteRednerWithBorder = !spriteRednerWithBorder;
+                                need = true;
+                                break;
+                            case Keys.A when spriteConverter.m_AlphaTexture2D != null:
+                                spriteMaskVisibleMode = spriteMaskVisibleMode == SpriteMaskMode.Preview ? SpriteMaskMode.Off : SpriteMaskMode.Preview;
+                                need = true;
+                                break;
+                            case Keys.M when spriteConverter.m_AlphaTexture2D != null:
+                                spriteMaskVisibleMode = spriteMaskVisibleMode == SpriteMaskMode.MaskOnly ? SpriteMaskMode.Preview : SpriteMaskMode.MaskOnly;
                                 need = true;
                                 break;
                         }
@@ -559,7 +584,7 @@ namespace AssetStudioGUI
 
         private void showExpOpt_Click(object sender, EventArgs e)
         {
-            var exportOpt = new ExportOptions();
+            var exportOpt = new ExportOptionsForm();
             exportOpt.ShowDialog(this);
         }
 
@@ -915,6 +940,11 @@ namespace AssetStudioGUI
                                 break;
                             }
                         }
+                        else if (l2dAssetsManager.ModelDict.ContainsKey(m_MonoBehaviour))
+                        {
+                            PreviewMoc(assetItem, m_MonoBehaviour);
+                            break;
+                        }
                         PreviewMonoBehaviour(m_MonoBehaviour);
                         break;
                     case ClassIDType.Font:
@@ -966,158 +996,77 @@ namespace AssetStudioGUI
 
         private void PreviewTexture2D(AssetItem assetItem, Texture2D m_Texture2D)
         {
-            var image = m_Texture2D.ConvertToImage(true);
-            if (image != null)
-            {
-                var bitmap = new DirectBitmap(image);
-                image.Dispose();
-
-                assetItem.InfoText = 
-                    $"Width: {m_Texture2D.m_Width}" +
-                    $"\nHeight: {m_Texture2D.m_Height}" +
-                    $"\nFormat: {m_Texture2D.m_TextureFormat}";
-                switch (m_Texture2D.m_TextureSettings.m_FilterMode)
-                {
-                    case 0: assetItem.InfoText += "\nFilter mode: Point "; break;
-                    case 1: assetItem.InfoText += "\nFilter mode: Bilinear "; break;
-                    case 2: assetItem.InfoText += "\nFilter mode: Trilinear "; break;
-                }
-                assetItem.InfoText += $"\nAnisotropic level: {m_Texture2D.m_TextureSettings.m_Aniso}\nMip map bias: {m_Texture2D.m_TextureSettings.m_MipBias}";
-                switch (m_Texture2D.m_TextureSettings.m_WrapMode)
-                {
-                    case 0: assetItem.InfoText += "\nWrap mode: Repeat"; break;
-                    case 1: assetItem.InfoText += "\nWrap mode: Clamp"; break;
-                }
-                assetItem.InfoText += "\nChannels: ";
-                var validChannel = 0;
-                for (var i = 0; i < 4; i++)
-                {
-                    if (textureChannels[i])
-                    {
-                        assetItem.InfoText += textureChannelNames[i];
-                        validChannel++;
-                    }
-                }
-                if (validChannel == 0)
-                    assetItem.InfoText += "None";
-                if (validChannel != 4)
-                {
-                    var bytes = bitmap.Bits;
-                    for (var i = 0; i < bitmap.Height; i++)
-                    {
-                        var offset = Math.Abs(bitmap.Stride) * i;
-                        for (var j = 0; j < bitmap.Width; j++)
-                        {
-                            bytes[offset] = textureChannels[0] ? bytes[offset] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
-                            bytes[offset + 1] = textureChannels[1] ? bytes[offset + 1] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
-                            bytes[offset + 2] = textureChannels[2] ? bytes[offset + 2] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
-                            bytes[offset + 3] = textureChannels[3] ? bytes[offset + 3] : byte.MaxValue;
-                            offset += 4;
-                        }
-                    }
-                }
-                var switchSwizzled = m_Texture2D.m_PlatformBlob.Length != 0;
-                assetItem.InfoText += assetItem.Asset.platform == BuildTarget.Switch
-                    ? $"\nUses texture swizzling: {switchSwizzled}"
-                    : "";
-                PreviewTexture(bitmap);
-
-                StatusStripUpdate("'Ctrl'+'R'/'G'/'B'/'A' for Channel Toggle");
-            }
-            else
+            var bitmap = new DirectBitmap(m_Texture2D, flip: true);
+            if (bitmap.Bitmap == null)
             {
                 StatusStripUpdate("Unsupported image for preview");
+                bitmap.Dispose();
+                return;
             }
+
+            assetItem.InfoText =
+                $"Width: {m_Texture2D.m_Width}" +
+                $"\nHeight: {m_Texture2D.m_Height}" +
+                $"\nFormat: {m_Texture2D.m_TextureFormat}";
+            switch (m_Texture2D.m_TextureSettings.m_FilterMode)
+            {
+                case 0: assetItem.InfoText += "\nFilter mode: Point "; break;
+                case 1: assetItem.InfoText += "\nFilter mode: Bilinear "; break;
+                case 2: assetItem.InfoText += "\nFilter mode: Trilinear "; break;
+            }
+            assetItem.InfoText += $"\nAnisotropic level: {m_Texture2D.m_TextureSettings.m_Aniso}\nMip map bias: {m_Texture2D.m_TextureSettings.m_MipBias}";
+            switch (m_Texture2D.m_TextureSettings.m_WrapMode)
+            {
+                case 0: assetItem.InfoText += "\nWrap mode: Repeat"; break;
+                case 1: assetItem.InfoText += "\nWrap mode: Clamp"; break;
+            }
+            assetItem.InfoText += "\nChannels: ";
+            var validChannel = 0;
+            for (var i = 0; i < 4; i++)
+            {
+                if (textureChannels[i])
+                {
+                    assetItem.InfoText += textureChannelNames[i];
+                    validChannel++;
+                }
+            }
+            if (validChannel == 0)
+                assetItem.InfoText += "None";
+            if (validChannel != 4)
+            {
+                var bytes = bitmap.Bits;
+                for (var i = 0; i < bitmap.Height; i++)
+                {
+                    var offset = Math.Abs(bitmap.Stride) * i;
+                    for (var j = 0; j < bitmap.Width; j++)
+                    {
+                        bytes[offset] = textureChannels[0] ? bytes[offset] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
+                        bytes[offset + 1] = textureChannels[1] ? bytes[offset + 1] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
+                        bytes[offset + 2] = textureChannels[2] ? bytes[offset + 2] : validChannel == 1 && textureChannels[3] ? byte.MaxValue : byte.MinValue;
+                        bytes[offset + 3] = textureChannels[3] ? bytes[offset + 3] : byte.MaxValue;
+                        offset += 4;
+                    }
+                }
+            }
+            var switchSwizzled = m_Texture2D.m_PlatformBlob.Length != 0;
+            assetItem.InfoText += assetItem.Asset.platform == BuildTarget.Switch
+                ? $"\nUses texture swizzling: {switchSwizzled}"
+                : "";
+            PreviewTexture(bitmap);
+
+            StatusStripUpdate("'Ctrl'+'R'/'G'/'B'/'A' for Channel Toggle");
         }
 
         private void PreviewAudioClip(AssetItem assetItem, AudioClip m_AudioClip)
         {
             //Info
-            assetItem.InfoText = "Compression format: ";
-            if (m_AudioClip.version < 5)
+            assetItem.InfoText = $"Compression format: {m_AudioClip.GetCompressionFormatString()}";
+            if (m_AudioClip.m_AudioData.Size <= 0)
             {
-                switch (m_AudioClip.m_Type)
-                {
-                    case FMODSoundType.AAC:
-                        assetItem.InfoText += "AAC";
-                        break;
-                    case FMODSoundType.AIFF:
-                        assetItem.InfoText += "AIFF";
-                        break;
-                    case FMODSoundType.IT:
-                        assetItem.InfoText += "Impulse tracker";
-                        break;
-                    case FMODSoundType.MOD:
-                        assetItem.InfoText += "Protracker / Fasttracker MOD";
-                        break;
-                    case FMODSoundType.MPEG:
-                        assetItem.InfoText += "MP2/MP3 MPEG";
-                        break;
-                    case FMODSoundType.OGGVORBIS:
-                        assetItem.InfoText += "Ogg vorbis";
-                        break;
-                    case FMODSoundType.S3M:
-                        assetItem.InfoText += "ScreamTracker 3";
-                        break;
-                    case FMODSoundType.WAV:
-                        assetItem.InfoText += "Microsoft WAV";
-                        break;
-                    case FMODSoundType.XM:
-                        assetItem.InfoText += "FastTracker 2 XM";
-                        break;
-                    case FMODSoundType.XMA:
-                        assetItem.InfoText += "Xbox360 XMA";
-                        break;
-                    case FMODSoundType.VAG:
-                        assetItem.InfoText += "PlayStation Portable ADPCM";
-                        break;
-                    case FMODSoundType.AUDIOQUEUE:
-                        assetItem.InfoText += "iPhone";
-                        break;
-                    default:
-                        assetItem.InfoText += $"Unknown ({m_AudioClip.m_Type})";
-                        break;
-                }
+                Logger.Warning("AudioData size shouldn't be 0");
+                return;
             }
-            else
-            {
-                switch (m_AudioClip.m_CompressionFormat)
-                {
-                    case AudioCompressionFormat.PCM:
-                        assetItem.InfoText += "PCM";
-                        break;
-                    case AudioCompressionFormat.Vorbis:
-                        assetItem.InfoText += "Vorbis";
-                        break;
-                    case AudioCompressionFormat.ADPCM:
-                        assetItem.InfoText += "ADPCM";
-                        break;
-                    case AudioCompressionFormat.MP3:
-                        assetItem.InfoText += "MP3";
-                        break;
-                    case AudioCompressionFormat.PSMVAG:
-                        assetItem.InfoText += "PlayStation Portable ADPCM";
-                        break;
-                    case AudioCompressionFormat.HEVAG:
-                        assetItem.InfoText += "PSVita ADPCM";
-                        break;
-                    case AudioCompressionFormat.XMA:
-                        assetItem.InfoText += "Xbox360 XMA";
-                        break;
-                    case AudioCompressionFormat.AAC:
-                        assetItem.InfoText += "AAC";
-                        break;
-                    case AudioCompressionFormat.GCADPCM:
-                        assetItem.InfoText += "Nintendo 3DS/Wii DSP";
-                        break;
-                    case AudioCompressionFormat.ATRAC9:
-                        assetItem.InfoText += "PSVita ATRAC9";
-                        break;
-                    default:
-                        assetItem.InfoText += "Unknown";
-                        break;
-                }
-            }
+
             soundBuff = BigArrayPool<byte>.Shared.Rent(m_AudioClip.m_AudioData.Size);
             var dataLen = m_AudioClip.m_AudioData.GetData(soundBuff);
             if (dataLen <= 0)
@@ -1126,30 +1075,33 @@ namespace AssetStudioGUI
             var exinfo = new FMOD.CREATESOUNDEXINFO();
             exinfo.cbsize = Marshal.SizeOf(exinfo);
             exinfo.length = (uint)m_AudioClip.m_Size;
+            var mode = FMOD.MODE.OPENMEMORY | FMOD.MODE.LOWMEM | FMOD.MODE.IGNORETAGS | FMOD.MODE.ACCURATETIME | FMOD.MODE.MPEGSEARCH | loopMode;
+            if (m_AudioClip.IsLegacyRawWav())
+            {
+                exinfo.format = (LegacyAudioType)m_AudioClip.m_Format == LegacyAudioType.RawWavU8Mono ? FMOD.SOUND_FORMAT.PCM8 : FMOD.SOUND_FORMAT.PCM16;
+                exinfo.numchannels = m_AudioClip.m_Channels;
+                exinfo.defaultfrequency = m_AudioClip.m_Frequency;
+                mode |= FMOD.MODE.OPENRAW;
+                if (m_AudioClip.m_AudioData.Endian == EndianType.BigEndian)
+                {
+                    AudioClipConverter.LegacyRawWavSwapEndian(soundBuff, m_AudioClip.m_AudioData.Size, (LegacyAudioType)m_AudioClip.m_Format);
+                }
+            }
 
-            var result = system.createStream(soundBuff, FMOD.MODE.OPENMEMORY | FMOD.MODE.LOWMEM | FMOD.MODE.IGNORETAGS | FMOD.MODE.ACCURATETIME | loopMode, ref exinfo, out sound);
+            var result = system.createStream(soundBuff, mode, ref exinfo, out sound);
             if (result != FMOD.RESULT.OK)
             {
-                if (m_AudioClip.version < (2, 6) || m_AudioClip.version >= 5)
-                {
-                    var legacyFormat = m_AudioClip.IsLegacyConvertSupport()
-                        ? "\nLegacy audio format: Raw wav data"
-                        : "";
-                    var channels = m_AudioClip.m_Channels > 0
-                        ? $"\nChannel count: {m_AudioClip.m_Channels}"
-                        : "";
-                    var bits = m_AudioClip.version >= 5
-                        ? $"\nBit depth: {m_AudioClip.m_BitsPerSample}"
-                        : "";
-                    assetItem.InfoText +=
-                        legacyFormat +
-                        $"\nLength: {m_AudioClip.m_Length:0.0##}" +
-                        $"\nSample rate: {m_AudioClip.m_Frequency}" +
-                        channels +
-                        bits;
-                }
+                if (m_AudioClip.m_Length > 0)
+                    assetItem.InfoText += $"\nLength: {m_AudioClip.m_Length:0.0##}";
+                if (m_AudioClip.m_Frequency > 0)
+                    assetItem.InfoText += $"\nSample rate: {m_AudioClip.m_Frequency}";
+                if (m_AudioClip.m_Channels > 0)
+                    assetItem.InfoText += $"\nChannel count: {m_AudioClip.m_Channels}";
+                if (m_AudioClip.version >= 5)
+                    assetItem.InfoText += $"\nBit depth: {m_AudioClip.m_BitsPerSample}";
+
                 var errorMsg = result == FMOD.RESULT.ERR_VERSION
-                    ? "Unsupported version of fmod sound. Try to export raw and convert with an external tool instead."
+                    ? "Unsupported version of FMOD sound. Try to export and convert with an external tool instead."
                     : $"Preview not available, try to export instead. {FMOD.Error.String(result)}";
                 StatusStripUpdate(errorMsg);
                 FMODreset();
@@ -1172,8 +1124,8 @@ namespace AssetStudioGUI
             result = sound.getLoopPoints(out FMODloopstartms, FMOD.TIMEUNIT.MS, out FMODloopendms, FMOD.TIMEUNIT.MS);
             if (result == FMOD.RESULT.OK)
             {
-                assetItem.InfoText += $"\nLoop Start: {(FMODloopstartms / 1000 / 60):00}:{(FMODloopstartms / 1000 % 60):00}.{(FMODloopstartms / 10 % 100):00}";
-                assetItem.InfoText += $"\nLoop End: {(FMODloopendms / 1000 / 60):00}:{(FMODloopendms / 1000 % 60):00}.{(FMODloopendms / 10 % 100):00}";
+                assetItem.InfoText += $"\nLoop Start: {(FMODloopstartms / 1000 / 60):00}:{(FMODloopstartms / 1000 % 60):00}.{(FMODloopstartms % 1000):000}";
+                assetItem.InfoText += $"\nLoop End: {(FMODloopendms / 1000 / 60):00}:{(FMODloopendms / 1000 % 60):00}.{(FMODloopendms % 1000):000}";
             }
 
             var paused = !autoPlayAudioAssetsToolStripMenuItem.Checked;
@@ -1191,9 +1143,9 @@ namespace AssetStudioGUI
             if (ERRCHECK(result)) return;
 
             FMODinfoLabel.Text = frequency + " Hz";
-            FMODtimerLabel.Text = $"00:00.00 / {(FMODlenms / 1000 / 60):00}:{(FMODlenms / 1000 % 60):00}.{(FMODlenms / 10 % 100):00}";
+            FMODtimerLabel.Text = $"00:00.00 / {(FMODlenms / 1000 / 60):00}:{(FMODlenms / 1000 % 60):00}.{(FMODlenms % 1000 / 10):00}";
 
-            sound.getFormat(out _, out _, out var audioChannels, out _);
+            sound.getFormat(out var soundType, out var soundFormat, out var audioChannels, out _);
             switch (audioChannels)
             {
                 case 1:
@@ -1205,6 +1157,12 @@ namespace AssetStudioGUI
                 default:
                     FMODaudioChannelsLabel.Text = $"{audioChannels}-Channel";
                     break;
+            }
+
+            if (showAssetDebugInfo)
+            {
+                assetItem.InfoText += $"\nSound type: {soundType}";
+                assetItem.InfoText += $"\nSound format: {soundFormat}";
             }
         }
 
@@ -1222,7 +1180,12 @@ namespace AssetStudioGUI
 
         private void PreviewShader(Shader m_Shader)
         {
-            var str = ShaderConverter.Convert(m_Shader);
+            if (m_Shader == null)
+            {
+                StatusStripUpdate("Unsupported shader");
+                return;
+            }
+            var str = m_Shader.Convert();
             PreviewText(str == null ? "Serialized Shader can't be read" : str.Replace("\n", "\r\n"));
         }
 
@@ -1241,16 +1204,16 @@ namespace AssetStudioGUI
                 var type = MonoBehaviourToTypeTree(m_MonoBehaviour);
                 obj = m_MonoBehaviour.ToType(type);
             }
-            var str = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            var str = System.Text.Json.JsonSerializer.Serialize(obj, AssetStudio.Object.JsonOptions);
             PreviewText(str);
         }
 
         private void PreviewMoc(AssetItem assetItem, MonoBehaviour m_MonoBehaviour)
         {
-            using (var cubismMoc = new CubismMoc(m_MonoBehaviour))
+            using (var cubismMoc = new AssetStudio.Addons.CubismLive2D.CubismMoc(m_MonoBehaviour))
             {
                 var sb = new StringBuilder();
-                if (Studio.l2dModelDict.TryGetValue(m_MonoBehaviour, out var model) && model != null)
+                if (Studio.l2dAssetsManager.ModelDict.TryGetValue(m_MonoBehaviour, out var model) && model != null)
                 {
                     sb.AppendLine($"Model Name: {model.Name}");
                 }
@@ -1273,52 +1236,53 @@ namespace AssetStudioGUI
 
         private void PreviewFont(Font m_Font)
         {
-            if (m_Font.m_FontData != null)
+            if (m_Font?.m_FontData == null)
             {
-                var data = Marshal.AllocCoTaskMem(m_Font.m_FontData.Length);
-                Marshal.Copy(m_Font.m_FontData, 0, data, m_Font.m_FontData.Length);
+                StatusStripUpdate("Unsupported font for preview.");
+                return;
+            }
 
-                uint cFonts = 0;
-                var re = AddFontMemResourceEx(data, (uint)m_Font.m_FontData.Length, IntPtr.Zero, ref cFonts);
-                if (re != IntPtr.Zero)
+            var data = Marshal.AllocCoTaskMem(m_Font.m_FontData.Length);
+            Marshal.Copy(m_Font.m_FontData, 0, data, m_Font.m_FontData.Length);
+
+            uint cFonts = 0;
+            var re = AddFontMemResourceEx(data, (uint)m_Font.m_FontData.Length, IntPtr.Zero, ref cFonts);
+            if (re != IntPtr.Zero)
+            {
+                using (var pfc = new PrivateFontCollection())
                 {
-                    using (var pfc = new PrivateFontCollection())
+                    pfc.AddMemoryFont(data, m_Font.m_FontData.Length);
+                    Marshal.FreeCoTaskMem(data);
+                    if (pfc.Families.Length > 0)
                     {
-                        pfc.AddMemoryFont(data, m_Font.m_FontData.Length);
-                        Marshal.FreeCoTaskMem(data);
-                        if (pfc.Families.Length > 0)
-                        {
-                            fontPreviewBox.SelectionStart = 0;
-                            fontPreviewBox.SelectionLength = 80;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 16, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 81;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 12, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 138;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 18, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 195;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 24, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 252;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 36, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 309;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 48, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 366;
-                            fontPreviewBox.SelectionLength = 56;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 60, FontStyle.Regular);
-                            fontPreviewBox.SelectionStart = 423;
-                            fontPreviewBox.SelectionLength = 55;
-                            fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 72, FontStyle.Regular);
-                            fontPreviewBox.Visible = true;
-                        }
+                        fontPreviewBox.SelectionStart = 0;
+                        fontPreviewBox.SelectionLength = 80;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 16, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 81;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 12, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 138;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 18, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 195;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 24, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 252;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 36, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 309;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 48, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 366;
+                        fontPreviewBox.SelectionLength = 56;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 60, FontStyle.Regular);
+                        fontPreviewBox.SelectionStart = 423;
+                        fontPreviewBox.SelectionLength = 55;
+                        fontPreviewBox.SelectionFont = new System.Drawing.Font(pfc.Families[0], 72, FontStyle.Regular);
+                        fontPreviewBox.Visible = true;
                     }
-                    return;
                 }
             }
-            StatusStripUpdate("Unsupported font for preview. Try to export.");
         }
 
         private void PreviewMesh(Mesh m_Mesh)
@@ -1480,32 +1444,77 @@ namespace AssetStudioGUI
 
         private void PreviewSprite(AssetItem assetItem, Sprite m_Sprite)
         {
-            var image = m_Sprite.GetImage(spriteMaskMode: spriteMaskVisibleMode);
-            if (image != null)
+            var converter = new SpriteConverter(m_Sprite, spriteRenderWithOrigSize);
+            if (converter.TryConvertToImage(out var image, maskMode: spriteMaskVisibleMode))
             {
                 var bitmap = new DirectBitmap(image);
                 image.Dispose();
-                assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";
-                PreviewTexture(bitmap);
+                assetItem.InfoText =
+                    $"Width: {bitmap.Width}\n" +
+                    $"Height: {bitmap.Height}\n" +
+                    $"Keep original size: {spriteRenderWithOrigSize}\n" +
+                    $"Show border: {spriteRednerWithBorder}\n";
 
-                if (!m_Sprite.m_RD.alphaTexture.IsNull)
+                if (spriteRednerWithBorder)
+                    PreviewTextureWithBorder(bitmap);
+                else
+                    PreviewTexture(bitmap);
+
+                var statusStrip = "'Ctrl'+'R' - Switch cropping method | 'Ctrl'+'B' - Show sprite border";
+                if (converter.m_AlphaTexture2D != null)
                 {
-                    assetItem.InfoText += $"Alpha Mask: {spriteMaskVisibleMode}\n";
-                    StatusStripUpdate("'Ctrl'+'A' - Enable/Disable alpha mask usage. 'Ctrl'+'M' - Show alpha mask only.");
+                    assetItem.InfoText += $"Alpha Mask: {(spriteMaskVisibleMode == SpriteMaskMode.Preview ? "On" : spriteMaskVisibleMode.ToString())}\n";
+                    statusStrip += "\n'Ctrl'+'A' - Enable/Disable alpha mask usage | 'Ctrl'+'M' - Show alpha mask only";
                 }
+                StatusStripUpdate(statusStrip);
             }
             else
             {
-                StatusStripUpdate("Unsupported sprite for preview.");
+                var statusStrip = "Unsupported sprite for preview. ";
+                if (converter.Width == 0 || converter.Height == 0)
+                    statusStrip += "The width or height of the sprite is 0.";
+                if (converter.m_Texture2D == null)
+                    statusStrip += "Unable to find related Texture2D asset.";
+                StatusStripUpdate(statusStrip);
             }
         }
 
         private void PreviewTexture(DirectBitmap bitmap)
         {
+            previewPanel.Image.Dispose();
             imageTexture?.Dispose();
             imageTexture = bitmap;
             previewPanel.Image = imageTexture.Bitmap;
+
             if (imageTexture.Width > previewPanel.Width || imageTexture.Height > previewPanel.Height)
+                previewPanel.SizeMode = PictureBoxSizeMode.Zoom;
+            else
+                previewPanel.SizeMode = PictureBoxSizeMode.CenterImage;
+        }
+
+        private void PreviewTextureWithBorder(DirectBitmap bitmap)
+        {
+            previewPanel.Image.Dispose();
+            imageTexture?.Dispose();
+            imageTexture = null;
+
+            var borderSize = 1;
+            var newWidth = bitmap.Width + borderSize * 2;
+            var newHeight = bitmap.Height + borderSize * 2;
+
+            var newImage = new Bitmap(newWidth, newHeight);
+            using (var gfx = Graphics.FromImage(newImage))
+            {
+                using (var border = new Pen(System.Drawing.Color.Black, borderSize))
+                {
+                    gfx.DrawRectangle(border, 0, 0, newWidth - borderSize, newHeight - borderSize);
+                }
+                gfx.DrawImage(bitmap.Bitmap, new Point(borderSize, borderSize));
+                bitmap.Dispose();
+                previewPanel.Image = newImage;
+            }
+
+            if (newWidth > previewPanel.Width || newHeight > previewPanel.Height)
                 previewPanel.SizeMode = PictureBoxSizeMode.Zoom;
             else
                 previewPanel.SizeMode = PictureBoxSizeMode.CenterImage;
@@ -1552,9 +1561,11 @@ namespace AssetStudioGUI
             {
                 BeginInvoke(new Action(() =>
                 {
+                    progressBar1.Refresh();
+                    if (value == 0)
+                        return;
                     using (var graphics = progressBar1.CreateGraphics())
                     {
-                        progressBar1.Refresh();
                         var rect = new Rectangle(0, 0, progressBar1.Width, progressBar1.Height);
                         graphics.DrawString(str, progressBarTextFont, progressBarTextBrush, rect, progressBarTextFormat);
                     }
@@ -1562,9 +1573,11 @@ namespace AssetStudioGUI
             }
             else
             {
+                progressBar1.Refresh();
+                if (value == 0)
+                    return;
                 using (var graphics = progressBar1.CreateGraphics())
                 {
-                    progressBar1.Refresh();
                     var rect = new Rectangle(0, 0, progressBar1.Width, progressBar1.Height);
                     graphics.DrawString(str, progressBarTextFont, progressBarTextBrush, rect, progressBarTextFormat);
                 }
@@ -1589,11 +1602,13 @@ namespace AssetStudioGUI
                 Logger.Info("Resetting program...");
 
             Text = guiTitle;
+            AssetItem.Reset();
+            SerializedFile.Clear();
             Studio.assetsManager.Clear();
             Studio.assemblyLoader.Clear();
             Studio.exportableAssets.Clear();
             Studio.visibleAssets.Clear();
-            Studio.l2dModelDict.Clear();
+            Studio.l2dAssetsManager.Clear();
             sceneTreeView.Nodes.Clear();
             assetListView.VirtualListSize = 0;
             assetListView.Items.Clear();
@@ -1655,7 +1670,9 @@ namespace AssetStudioGUI
         {
             if (e.Button == MouseButtons.Right && assetListView.SelectedIndices.Count > 0)
             {
+                copyToolStripMenuItem.Visible = false;
                 goToSceneHierarchyToolStripMenuItem.Visible = false;
+                showParentTexture2DToolStripMenuItem.Visible = false;
                 showOriginalFileToolStripMenuItem.Visible = false;
                 exportAnimatorWithSelectedAnimationClipMenuItem.Visible = false;
                 exportAsLive2DModelToolStripMenuItem.Visible = false;
@@ -1665,6 +1682,12 @@ namespace AssetStudioGUI
 
                 if (assetListView.SelectedIndices.Count == 1)
                 {
+                    var selectedElement = assetListView.HitTest(new Point(e.X, e.Y));
+                    var subItemIndex = selectedElement.Item.SubItems.IndexOf(selectedElement.SubItem);
+                    tempClipboard = selectedElement.SubItem.Text;
+                    copyToolStripMenuItem.Text = $"Copy {assetListView.Columns[subItemIndex].Text}";
+                    copyToolStripMenuItem.Visible = true;
+
                     goToSceneHierarchyToolStripMenuItem.Visible = true;
                     showOriginalFileToolStripMenuItem.Visible = true;
                 }
@@ -1677,20 +1700,41 @@ namespace AssetStudioGUI
                     {
                         switch (asset.Asset)
                         {
+                            case Sprite _ when assetListView.SelectedIndices.Count == 1:
+                                showParentTexture2DToolStripMenuItem.Visible = true;
+                                break;
                             case MonoBehaviour m_MonoBehaviour:
-                                if (Studio.l2dModelDict.Count > 0 && m_MonoBehaviour.m_Script.TryGet(out var m_Script))
+                                if (Studio.l2dAssetsManager.ModelDict.Count > 0)
                                 {
-                                    if (m_Script.m_ClassName == "CubismMoc")
+                                    if (m_MonoBehaviour.m_Script.TryGet(out var m_Script))
                                     {
-                                        selectedTypes |= SelectedAssetType.MonoBehaviourMoc;
+                                        switch (m_Script.m_ClassName)
+                                        {
+                                            case "CubismMoc":
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourMoc;
+                                                break;
+                                            case "CubismFadeMotionData":
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourFade;
+                                                break;
+                                            case "CubismFadeMotionList":
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourFadeLst;
+                                                break;
+                                        }
                                     }
-                                    else if (m_Script.m_ClassName == "CubismFadeMotionData")
+                                    else if (CubismHelpers.TryGetCubismMonoBehaviourType(m_MonoBehaviour, out var type))
                                     {
-                                        selectedTypes |= SelectedAssetType.MonoBehaviourFade;
-                                    }
-                                    else if (m_Script.m_ClassName == "CubismFadeMotionList")
-                                    {
-                                        selectedTypes |= SelectedAssetType.MonoBehaviourFadeLst;
+                                        switch (type)
+                                        {
+                                            case CubismHelpers.CubismMonoBehaviourType.Moc:
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourMoc;
+                                                break;
+                                            case CubismHelpers.CubismMonoBehaviourType.FadeMotion:
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourFade;
+                                                break;
+                                            case CubismHelpers.CubismMonoBehaviourType.FadeMotionList:
+                                                selectedTypes |= SelectedAssetType.MonoBehaviourFadeLst;
+                                                break;
+                                        }
                                     }
                                 }
                                 break;
@@ -1709,10 +1753,6 @@ namespace AssetStudioGUI
                     exportL2DWithClipsToolStripMenuItem.Visible = (selectedTypes & SelectedAssetType.MonoBehaviourMoc) != 0 && (selectedTypes & SelectedAssetType.AnimationClip) != 0;
                 }
 
-                var selectedElement = assetListView.HitTest(new Point(e.X, e.Y));
-                var subItemIndex = selectedElement.Item.SubItems.IndexOf(selectedElement.SubItem);
-                tempClipboard = selectedElement.SubItem.Text;
-                copyToolStripMenuItem.Text = $"Copy {assetListView.Columns[subItemIndex].Text}";
                 contextMenuStrip1.Show(assetListView, e.X, e.Y);
             }
         }
@@ -1833,76 +1873,6 @@ namespace AssetStudioGUI
             }
         }
 
-        private void goToSceneHierarchyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var selectAsset = (AssetItem)assetListView.Items[assetListView.SelectedIndices[0]];
-            if (selectAsset.TreeNode != null)
-            {
-                sceneTreeView.SelectedNode = selectAsset.TreeNode;
-                tabControl1.SelectedTab = tabPage1;
-            }
-        }
-
-        private void exportAllAssetsMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.All, ExportType.Convert);
-        }
-
-        private void exportSelectedAssetsMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Selected, ExportType.Convert);
-        }
-
-        private void exportFilteredAssetsMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Filtered, ExportType.Convert);
-        }
-
-        private void toolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.All, ExportType.Raw);
-        }
-
-        private void toolStripMenuItem5_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Selected, ExportType.Raw);
-        }
-
-        private void toolStripMenuItem6_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Filtered, ExportType.Raw);
-        }
-
-        private void toolStripMenuItem7_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.All, ExportType.Dump);
-        }
-
-        private void toolStripMenuItem8_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Selected, ExportType.Dump);
-        }
-
-        private void toolStripMenuItem9_Click(object sender, EventArgs e)
-        {
-            ExportAssets(ExportFilter.Filtered, ExportType.Dump);
-        }
-
-        private void toolStripMenuItem11_Click(object sender, EventArgs e)
-        {
-            ExportAssetsList(ExportFilter.All);
-        }
-
-        private void toolStripMenuItem12_Click(object sender, EventArgs e)
-        {
-            ExportAssetsList(ExportFilter.Selected);
-        }
-
-        private void toolStripMenuItem13_Click(object sender, EventArgs e)
-        {
-            ExportAssetsList(ExportFilter.Filtered);
-        }
-
         private void exportAllObjectsSplitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (sceneTreeView.Nodes.Count > 0)
@@ -1913,13 +1883,83 @@ namespace AssetStudioGUI
                 {
                     saveDirectoryBackup = saveFolderDialog.Folder;
                     var savePath = saveFolderDialog.Folder + Path.DirectorySeparatorChar;
-                    ExportSplitObjects(savePath, sceneTreeView.Nodes);
+                    Studio.ExportSplitObjects(savePath, sceneTreeView.Nodes);
                 }
             }
             else
             {
                 StatusStripUpdate("No Objects available for export");
             }
+        }
+
+        private void goToSceneHierarchyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selectedAsset = (AssetItem)assetListView.Items[assetListView.SelectedIndices[0]];
+            if (selectedAsset.TreeNode != null)
+            {
+                sceneTreeView.SelectedNode = selectedAsset.TreeNode;
+                tabControl1.SelectedTab = tabPage1;
+            }
+        }
+
+        private void showParentTexture2DToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var selectedAsset = (AssetItem)assetListView.Items[assetListView.SelectedIndices[0]];
+            var spriteConverter = new SpriteConverter((Sprite)selectedAsset.Asset);
+            var textureAsset = visibleAssets.Find(x => x.Type == ClassIDType.Texture2D && x.m_PathID == spriteConverter.m_Texture2D?.m_PathID);
+            if (textureAsset != null)
+            {
+                var listViewItem = assetListView.Items[assetListView.Items.IndexOf(textureAsset)];
+                assetListView.SelectedIndices.Clear();
+                listViewItem.Selected = true;
+                listViewItem.EnsureVisible();
+            }
+        }
+
+        private static ExportFilter GetExportFilterFromTag(string tag)
+        {
+            switch (tag)
+            {
+                case "all": return ExportFilter.All;
+                case "select": return ExportFilter.Selected;
+                case "filter": return ExportFilter.Filtered;
+                default: throw new NotSupportedException();
+            }
+        }
+
+        private void exportAssetsByToolStripMenuItem(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var exportFilter = GetExportFilterFromTag((string)menuItem.Tag);
+            ExportAssets(exportFilter, ExportType.Convert);
+        }
+
+        private void exportRawAssetsByToolStripMenuItem(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var exportFilter = GetExportFilterFromTag((string)menuItem.Tag);
+            ExportAssets(exportFilter, ExportType.Raw);
+        }
+
+        private void dumpAssetsByToolStripMenuItem(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var exportFilter = GetExportFilterFromTag((string)menuItem.Tag);
+            ExportAssets(exportFilter, ExportType.Dump);
+        }
+
+        private void jsonDumpAssetsByToolStripMenuItem(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var exportFilter = GetExportFilterFromTag((string)menuItem.Tag);
+            ExportAssets(exportFilter, ExportType.JsonDump);
+        }
+
+        private void exportAssetsListByToolStripMenuItem(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var exportFilter = GetExportFilterFromTag((string)menuItem.Tag);
+            ExportAssetsList(exportFilter);
         }
 
         private void assetListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -1998,7 +2038,7 @@ namespace AssetStudioGUI
                     }
                 }
                 visibleAssets = filterMoc
-                    ? exportableAssets.FindAll(x => (x.Asset is MonoBehaviour monoBehaviour && l2dModelDict.ContainsKey(monoBehaviour)) || show.Contains(x.Type))
+                    ? exportableAssets.FindAll(x => (x.Asset is MonoBehaviour monoBehaviour && Studio.l2dAssetsManager.ModelDict.ContainsKey(monoBehaviour)) || show.Contains(x.Type))
                     : exportableAssets.FindAll(x => show.Contains(x.Type));
             }
             else
@@ -2315,9 +2355,17 @@ namespace AssetStudioGUI
             Logger.Verbose("Closing AssetStudio");
         }
 
-        private void buildTreeStructureToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        private void decompressBundlesToDiskToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.buildTreeStructure = buildTreeStructureToolStripMenuItem.Checked;
+            var isEnabled = decompressBundlesToDiskToolStripMenuItem.Checked;
+            assetsManager.Options.DecompressToDisk = isEnabled;
+            Properties.Settings.Default.decompressToDisk = isEnabled;
+            Properties.Settings.Default.Save();
+        }
+
+        private void buildSceneHierarchyToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.buildTreeStructure = buildSceneHierarchyToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
         }
 
@@ -2325,7 +2373,7 @@ namespace AssetStudioGUI
         {
             if (exportableAssets.Count > 0)
             {
-                if (Studio.l2dModelDict.Count == 0)
+                if (Studio.l2dAssetsManager.ModelDict.Count == 0)
                 {
                     Logger.Info("Live2D Cubism models were not found.");
                     return;
@@ -2365,7 +2413,7 @@ namespace AssetStudioGUI
                 Logger.Info("No exportable assets loaded");
                 return;
             }
-            if (Studio.l2dModelDict.Count == 0)
+            if (Studio.l2dAssetsManager.ModelDict.Count == 0)
             {
                 Logger.Info("Live2D Cubism models were not found.");
                 return;
@@ -2392,6 +2440,20 @@ namespace AssetStudioGUI
                                 selectedFadeMotions.Add(m_MonoBehaviour);
                                 break;
                             case "CubismFadeMotionList":
+                                selectedFadeLst = m_MonoBehaviour;
+                                break;
+                        }
+                        break;
+                    case MonoBehaviour m_MonoBehaviour when CubismHelpers.TryGetCubismMonoBehaviourType(m_MonoBehaviour, out var type):
+                        switch (type)
+                        {
+                            case CubismHelpers.CubismMonoBehaviourType.Moc:
+                                selectedMocs.Add(m_MonoBehaviour);
+                                break;
+                            case CubismHelpers.CubismMonoBehaviourType.FadeMotion:
+                                selectedFadeMotions.Add(m_MonoBehaviour);
+                                break;
+                            case CubismHelpers.CubismMonoBehaviourType.FadeMotionList:
                                 selectedFadeLst = m_MonoBehaviour;
                                 break;
                         }
@@ -2454,17 +2516,25 @@ namespace AssetStudioGUI
             }
         }
 
-        private void importOptions_DropDownClose(object sender, EventArgs e)
+        private void optionsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            displayAll.Checked = Properties.Settings.Default.displayAll;
+            parseByTypetreeToolStripMenuItem.Checked = assetsManager.Options.ParseByTypeTree;
+            decompressBundlesToDiskToolStripMenuItem.Checked = assetsManager.Options.DecompressToDisk;
+            buildSceneHierarchyToolStripMenuItem.Checked = Properties.Settings.Default.buildTreeStructure;
+        }
+
+        private void gameOptions_DropDownClose(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(specifyUnityVersionTextBox.Text))
             {
-                assetsManager.Options.CustomUnityVersion = null;
+                assetsManager.Options.GameSpecific.CustomUnityVersion = null;
                 return;
             }
 
             try
             {
-                assetsManager.Options.CustomUnityVersion = new UnityVersion(specifyUnityVersionTextBox.Text);
+                assetsManager.Options.GameSpecific.CustomUnityVersion = new UnityVersion(specifyUnityVersionTextBox.Text);
             }
             catch (Exception ex)
             {
@@ -2472,62 +2542,16 @@ namespace AssetStudioGUI
             }
         }
 
-        private void importOptions_DropDownOpened(object sender, EventArgs e)
+        private void gameOptions_DropDownOpened(object sender, EventArgs e)
         {
-            if (assetsManager.Options.CustomUnityVersion != null)
+            if (assetsManager.Options.GameSpecific.CustomUnityVersion != null)
             {
-                specifyUnityVersionTextBox.Text = assetsManager.Options.CustomUnityVersion.FullVersion;
+                specifyUnityVersionTextBox.Text = assetsManager.Options.GameSpecific.CustomUnityVersion.FullVersion;
             }
-            alwaysDecompressToDiskToolStripMenuItem.Checked = assetsManager.Options.BundleOptions.DecompressToDisk;
-            customBlockInfoCompressionComboBox.SelectedIndex = SetComboBoxIndex(assetsManager.Options.BundleOptions.CustomBlockInfoCompression);
-            customBlockCompressionComboBox.SelectedIndex = SetComboBoxIndex(assetsManager.Options.BundleOptions.CustomBlockCompression);
-        }
-
-        private static int SetComboBoxIndex(CompressionType compressionType)
-        {
-            switch (compressionType)
-            {
-                case CompressionType.Auto: return 0;
-                case CompressionType.Lzma: return 4;
-                case CompressionType.Lz4:
-                case CompressionType.Lz4HC: return 3;
-                case CompressionType.Zstd:  return 1;
-                case CompressionType.Oodle: return 2;
-                default: throw new NotSupportedException();
-            }
-        }
-
-        private void customBlockCompressionComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var selectedTypeIndex = customBlockCompressionComboBox.SelectedIndex;
-            assetsManager.Options.BundleOptions.CustomBlockCompression = GetCustomCompressionTypes(selectedTypeIndex);
-        }
-
-        private void customBlockInfoCompressionComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var selectedTypeIndex = customBlockInfoCompressionComboBox.SelectedIndex;
-            assetsManager.Options.BundleOptions.CustomBlockInfoCompression = GetCustomCompressionTypes(selectedTypeIndex);
-        }
-
-        private static CompressionType GetCustomCompressionTypes(int index)
-        {
-            switch (index)
-            {
-                case 0: return CompressionType.Auto;
-                case 1: return CompressionType.Zstd;
-                case 2: return CompressionType.Oodle;
-                case 3: return CompressionType.Lz4HC;
-                case 4: return CompressionType.Lzma;
-                default: throw new NotSupportedException();
-            }
-        }
-
-        private void alwaysDecompressToDiskToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var isEnabled = alwaysDecompressToDiskToolStripMenuItem.Checked;
-            assetsManager.Options.BundleOptions.DecompressToDisk = isEnabled;
-            Properties.Settings.Default.decompressToDisk = isEnabled;
-            Properties.Settings.Default.Save();
+            
+            //highDpi workaround
+            var font = customUnityVersionToolStripMenuItem.Font;
+            specifyUnityVersionTextBox.Font = font;
         }
 
         private void saveOptionsToDiskToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2537,21 +2561,20 @@ namespace AssetStudioGUI
             if (saveFolderDialog.ShowDialog(this) == DialogResult.OK)
             {
                 var savePath = saveFolderDialog.Folder;
-                assetsManager.Options.SaveToFile(savePath);
+                assetsManager.Options.GameSpecific.SaveToFile(savePath);
             }
         }
 
-        private void useAssetLoadingViaTypetreeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        private void parseByTypetreeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            var isEnabled = useAssetLoadingViaTypetreeToolStripMenuItem.Checked;
-            assetsManager.LoadViaTypeTree = isEnabled;
+            var isEnabled = parseByTypetreeToolStripMenuItem.Checked;
+            assetsManager.Options.ParseByTypeTree = isEnabled;
             Properties.Settings.Default.useTypetreeLoading = isEnabled;
             Properties.Settings.Default.Save();
         }
 
-        private void ApplyColorTheme(out bool isDarkMode)
+        private void ApplyColorTheme()
         {
-            isDarkMode = false;
             if (SystemInformation.HighContrast)
                 return;
 
@@ -2641,21 +2664,46 @@ namespace AssetStudioGUI
             MessageBox.Show(msg, "Info", MessageBoxButtons.OK);
         }
 
+        //highDpi workaround
+        private void ReScale(object sender, EventArgs e)
+        {
+            float k = Font.Height / guiFontHeight;
+            if (k == 1.0f)
+                return;
+
+            //asset list fix
+            foreach (ColumnHeader column in assetListView.Columns)
+            {
+                column.Width = (int)(column.Width * k);
+            }
+
+            guiFontHeight = Font.Height;
+        }
+
         private void DumpTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 dumpTreeView.SelectedNode = e.Node;
-                tempClipboard = string.IsNullOrEmpty((string)e.Node.Tag)
-                    ? e.Node.Text
-                    : $"{e.Node.Name}: {e.Node.Tag}";
+                tvCopyValToolStripMenuItem.Visible = !string.IsNullOrEmpty((string)e.Node.Tag);
                 dumpTreeViewContextMenuStrip.Show(dumpTreeView, e.Location.X, e.Location.Y);
             }
         }
 
-        private void copyToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void tvCopyNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetDataObject(tempClipboard);
+            var name = dumpTreeView.SelectedNode.Name;
+            if (string.IsNullOrEmpty(name))
+                name = dumpTreeView.SelectedNode.Text;
+
+            Clipboard.SetDataObject(name);
+        }
+
+        private void tvCopyValToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var val = (string)dumpTreeView.SelectedNode.Tag ?? "";
+
+            Clipboard.SetDataObject(val);
         }
 
         private void expandAllToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -2696,25 +2744,48 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
-        private void meshLazyLoadToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        private void moreGameOptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.meshLazyLoad = meshLazyLoadToolStripMenuItem.Checked;
-            assetsManager.MeshLazyLoad = meshLazyLoadToolStripMenuItem.Checked;
-            Properties.Settings.Default.Save();
-        }
-
-        private static void FbxInitOptions(string base64String)
-        {
-            if (string.IsNullOrEmpty(base64String))
+            if (gameOptionsForm == null || gameOptionsForm.IsDisposed)
             {
-                Studio.FbxSettings = new Fbx.Settings();
-                Properties.Settings.Default.fbxSettings = Studio.FbxSettings.ToBase64();
-                Properties.Settings.Default.Save();
+                gameOptionsForm = new GameOptionsForm(assetsManager.Options.GameSpecific);
+                gameOptionsForm.Show(this);
             }
             else
             {
-                Studio.FbxSettings = Fbx.Settings.FromBase64(base64String);
+                gameOptionsForm.Focus();
             }
+        }
+
+        private void moreStudioOptionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var studioOptions = new StudioOptionsForm(assetsManager.Options);
+            studioOptions.ShowDialog(this);
+        }
+
+        private void OnUnityVersionChanged(object s, EventArgs e)
+        {
+            if (assetsManager.Options.GameSpecific.CustomUnityVersion == null)
+            {
+                specifyUnityVersionTextBox.Text = "";
+                unityVersionStatusLabel.Text = "";
+                unityVersionStatusLabel.Visible = false;
+            }
+            else
+            {
+                unityVersionStatusLabel.Text = assetsManager.Options.GameSpecific.CustomUnityVersion.FullVersion;
+                unityVersionStatusLabel.Visible = true;
+            }
+        }
+
+        private void unityVersionStatusLabel_DoubleClick(object sender, EventArgs e)
+        {
+            assetsManager.Options.GameSpecific.CustomUnityVersion = null;
+        }
+
+        private void showAssetDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showAssetDebugInfo = !showAssetDebugInfo;
         }
 
         #region FMOD
@@ -2925,7 +2996,7 @@ namespace AssetStudioGUI
             if (channel.hasHandle())
             {
                 uint newms = FMODlenms / 1000 * (uint)FMODprogressBar.Value;
-                FMODtimerLabel.Text = $"{newms / 1000 / 60:00}:{newms / 1000 % 60:00}.{newms / 10 % 100:00} / {FMODlenms / 1000 / 60:00}:{FMODlenms / 1000 % 60:00}.{FMODlenms / 10 % 100:00}";
+                FMODtimerLabel.Text = $"{newms / 1000 / 60:00}:{newms / 1000 % 60:00}.{newms % 1000 / 10:00} / {FMODlenms / 1000 / 60:00}:{FMODlenms / 1000 % 60:00}.{FMODlenms % 1000 / 10:00}";
             }
         }
 
@@ -2992,7 +3063,7 @@ namespace AssetStudioGUI
                 }
             }
 
-            FMODtimerLabel.Text = $"{ms / 1000 / 60:00}:{ms / 1000 % 60:00}.{ms / 10 % 100:00} / {FMODlenms / 1000 / 60:00}:{FMODlenms / 1000 % 60:00}.{FMODlenms / 10 % 100:00}";
+            FMODtimerLabel.Text = $"{ms / 1000 / 60:00}:{ms / 1000 % 60:00}.{ms % 1000 / 10:00} / {FMODlenms / 1000 / 60:00}:{FMODlenms / 1000 % 60:00}.{FMODlenms % 1000 / 10:00}";
             FMODprogressBar.Value = (int)AssetStudio.MathHelper.Clamp(ms * 1000f / FMODlenms, 0, 1000);
             FMODstatusLabel.Text = paused ? "Paused " : playing ? "Playing" : "Stopped";
 

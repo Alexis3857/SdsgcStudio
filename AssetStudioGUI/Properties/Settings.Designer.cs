@@ -12,7 +12,7 @@ namespace AssetStudioGUI.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -349,13 +349,13 @@ namespace AssetStudioGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool meshLazyLoad {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool meshPreProcessing {
             get {
-                return ((bool)(this["meshLazyLoad"]));
+                return ((bool)(this["meshPreProcessing"]));
             }
             set {
-                this["meshLazyLoad"] = value;
+                this["meshPreProcessing"] = value;
             }
         }
         
@@ -368,6 +368,42 @@ namespace AssetStudioGUI.Properties {
             }
             set {
                 this["rawByteArrayFromMono"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string cachePath {
+            get {
+                return ((string)(this["cachePath"]));
+            }
+            set {
+                this["cachePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool keepSpriteSize {
+            get {
+                return ((bool)(this["keepSpriteSize"]));
+            }
+            set {
+                this["keepSpriteSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool l2dFilterTextures {
+            get {
+                return ((bool)(this["l2dFilterTextures"]));
+            }
+            set {
+                this["l2dFilterTextures"] = value;
             }
         }
     }

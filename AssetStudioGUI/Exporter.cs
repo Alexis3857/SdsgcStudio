@@ -1,5 +1,5 @@
 ﻿using AssetStudio;
-using Newtonsoft.Json;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,11 +9,29 @@ namespace AssetStudioGUI
 {
     internal static class Exporter
     {
+        internal static readonly Fbx.Settings FbxSettings;
         private static readonly HashSet<string> ExportPathHashSet = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+        private static readonly HashSet<char> InvalidChars = new HashSet<char>(Path.GetInvalidFileNameChars());
+
+        static Exporter()
+        {
+            InvalidChars.UnionWith(new[] { '"', '<', '>', '|', ':', '*', '?', '\\', '/' });
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.fbxSettings))
+            {
+                FbxSettings = new Fbx.Settings();
+                Properties.Settings.Default.fbxSettings = FbxSettings.ToBase64();
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                FbxSettings = Fbx.Settings.FromBase64(Properties.Settings.Default.fbxSettings);
+            }
+        }
 
         private static bool TryExportFile(string dir, AssetItem item, string extension, out string fullPath, string mode = "Export")
         {
-            var fileName = FixFileName(item.Text);
+            var fileName = item.Text;
             var filenameFormatIndex = Properties.Settings.Default.filenameFormat;
             var canOverwrite = Properties.Settings.Default.overwriteExistingFiles;
             switch (filenameFormatIndex)
@@ -25,7 +43,7 @@ namespace AssetStudioGUI
                     fileName = item.m_PathID.ToString();
                     break;
             }
-            fullPath = Path.Combine(dir, fileName + extension);
+            fullPath = SafeFilePath(dir, $"{fileName}{extension}");
             if (ExportPathHashSet.Add(fullPath))
             {
                 if (CanWrite(fullPath, dir, canOverwrite))
@@ -35,7 +53,7 @@ namespace AssetStudioGUI
             }
             else if (filenameFormatIndex == 0) //assetName
             {
-                fullPath = Path.Combine(dir, fileName + item.UniqueID + extension);
+                fullPath = SafeFilePath(dir, $"{fileName}{item.UniqueID}{extension}");
                 if (CanWrite(fullPath, dir, canOverwrite))
                 {
                     return true;
@@ -77,12 +95,15 @@ namespace AssetStudioGUI
 
         private static bool ExportShader(AssetItem item, string exportPath)
         {
-            if (!TryExportFile(exportPath, item, ".shader", out var exportFullPath))
-                return false;
-            var m_Shader = (Shader)item.Asset;
-            var str = m_Shader.Convert();
-            File.WriteAllText(exportFullPath, str);
-            return true;
+            if (item.Asset is Shader m_Shader)
+            {
+                if (!TryExportFile(exportPath, item, ".shader", out var exportFullPath))
+                    return false;
+                var str = m_Shader.Convert();
+                File.WriteAllText(exportFullPath, str);
+                return true;
+            }
+            return false;
         }
 
         private static bool ExportTextAsset(AssetItem item, string exportPath)
@@ -121,18 +142,17 @@ namespace AssetStudioGUI
                 var m_Type = Studio.MonoBehaviourToTypeTree(m_MonoBehaviour);
                 type = m_MonoBehaviour.ToType(m_Type);
             }
-            var str = JsonConvert.SerializeObject(type, Formatting.Indented);
+            var str = System.Text.Json.JsonSerializer.Serialize(type, Object.JsonOptions);
             File.WriteAllText(exportFullPath, str);
             return true;
         }
 
         private static bool ExportFont(AssetItem item, string exportPath)
         {
-            var m_Font = (Font)item.Asset;
-            if (m_Font.m_FontData != null)
+            if (item.Asset is Font m_Font && m_Font.m_FontData != null)
             {
                 var extension = ".ttf";
-                if (m_Font.m_FontData[0] == 79 && m_Font.m_FontData[1] == 84 && m_Font.m_FontData[2] == 84 && m_Font.m_FontData[3] == 79)
+                if (BinaryPrimitives.ReadInt32LittleEndian(m_Font.m_FontData) == 0x4F54544F) //"OTTO"
                 {
                     extension = ".otf";
                 }
@@ -232,12 +252,12 @@ namespace AssetStudioGUI
 
         public static bool ExportAnimator(AssetItem item, string exportPath, List<AssetItem> animationList = null)
         {
-            var exportFullPath = Path.Combine(exportPath, item.Text, item.Text + ".fbx");
+            var exportFullPath = SafeFilePath(exportPath, item.Text, item.Text + ".fbx");
             if (File.Exists(exportFullPath))
             {
-                exportFullPath = Path.Combine(exportPath, item.Text + item.UniqueID, item.Text + ".fbx");
+                exportFullPath = SafeFilePath(exportPath, item.Text + item.UniqueID, item.Text + ".fbx");
             }
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!FbxSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var m_Animator = (Animator)item.Asset;
             var convert = animationList != null
@@ -247,9 +267,25 @@ namespace AssetStudioGUI
             return true;
         }
 
-        private static void ExportFbx(IImported convert, string exportPath)
+        private static void ExportFbx(ModelConverter convert, string exportPath)
         {
-            ModelExporter.ExportFbx(exportPath, convert, Studio.FbxSettings);
+            ModelExporter.ExportFbx(exportPath, convert, FbxSettings);
+            if (!FbxSettings.DumpMaterials || convert.MaterialAssetSet.Count == 0 || !File.Exists(exportPath))
+                return;
+
+            var exportDir = Path.Combine(Path.GetDirectoryName(exportPath), "Materials");
+            Directory.CreateDirectory(exportDir);
+            foreach (var mat in convert.MaterialAssetSet)
+            {
+                var jsonDoc = mat.ToJsonDoc();
+                var str = System.Text.Json.JsonSerializer.Serialize(jsonDoc, Object.JsonOptions);
+                var exportFullPath = SafeFilePath(exportDir, $"{mat.m_Name}.json");
+                if (File.Exists(exportFullPath))
+                {
+                    exportFullPath = SafeFilePath(exportDir, $"{mat.m_Name} #{mat.GetHashCode():x}.json");
+                }
+                File.WriteAllText(exportFullPath, str);
+            }
         }
 
         public static bool ExportRawFile(AssetItem item, string exportPath)
@@ -327,6 +363,19 @@ namespace AssetStudioGUI
             return false;
         }
 
+        public static bool ExportJsonDumpFile(AssetItem item, string exportPath)
+        {
+            if (!TryExportFile(exportPath, item, ".json", out var exportFullPath, mode: "JsonDump"))
+                return false;
+            var m_Type = item.Asset is MonoBehaviour m_MonoBehaviour
+                ? m_MonoBehaviour.serializedType.m_Type ?? Studio.MonoBehaviourToTypeTree(m_MonoBehaviour)
+                : null;
+            var jsonDoc = item.Asset.ToJsonDoc(m_Type);
+            var str = System.Text.Json.JsonSerializer.Serialize(jsonDoc, Object.JsonOptions);
+            File.WriteAllText(exportFullPath, str);
+            return true;
+        }
+
         public static bool ExportConvertFile(AssetItem item, string exportPath)
         {
             switch (item.Type)
@@ -362,19 +411,19 @@ namespace AssetStudioGUI
 
         public static void ExportGameObject(GameObject gameObject, string exportPath, List<AssetItem> animationList = null)
         {
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!FbxSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var convert = animationList != null
                 ? new ModelConverter(gameObject, Properties.Settings.Default.convertType, animationList.Select(x => (AnimationClip)x.Asset).ToList())
                 : new ModelConverter(gameObject, Properties.Settings.Default.convertType);
-            exportPath = exportPath + FixFileName(gameObject.m_Name) + ".fbx";
+            exportPath = SafeFilePath(exportPath, $"{gameObject.m_Name}.fbx");
             ExportFbx(convert, exportPath);
         }
 
         public static void ExportGameObjectMerge(List<GameObject> gameObject, string exportPath, List<AssetItem> animationList = null)
         {
             var rootName = Path.GetFileNameWithoutExtension(exportPath);
-            if (!Studio.FbxSettings.ExportAnimations)
+            if (!FbxSettings.ExportAnimations)
                 animationList = new List<AssetItem>();
             var convert = animationList != null
                 ? new ModelConverter(rootName, gameObject, Properties.Settings.Default.convertType, animationList.Select(x => (AnimationClip)x.Asset).ToList())
@@ -382,11 +431,45 @@ namespace AssetStudioGUI
             ExportFbx(convert, exportPath);
         }
 
-        public static string FixFileName(string str)
+        public static string SafeFileName(string str)
         {
-            return str.Length >= 260
-                ? Path.GetRandomFileName()
-                : Path.GetInvalidFileNameChars().Aggregate(str, (current, c) => current.Replace(c, '_'));
+            if (str.Length >= 255)
+            {
+                var newName = Path.GetRandomFileName();
+                Logger.Warning("The asset file name is too long.\n" +
+                               $"\"{str}\"\n" +
+                               "Was replaced with:\n" +
+                               $"\"{newName}\"");
+                return newName;
+            }
+
+            return InvalidChars.Aggregate(str, (current, c) => current.Replace(c, '_')).Trim();
+        }
+
+        public static string SafeFilePath(string path, params string[] names)
+        {
+            var result = path;
+            foreach (var name in names)
+            {
+                result = Path.Combine(result, SafeFileName(name));
+            }
+
+            if (result.Length >= 4096)
+            {
+                var newPath = Path.Combine(Directory.GetCurrentDirectory(), SafeFileName(names.Last()));
+                Logger.Warning("The export path is too long.\n" +
+                               $"\"{result}\"\n" +
+                               "Was reduced to:\n" +
+                               $"\"{newPath}\"");
+                return newPath;
+            }
+
+            return Path.GetInvalidPathChars().Aggregate(result, (current, c) => current.Replace(c, '_'));
+        }
+
+        public static string SafePathCombine(string pathA, string pathB)
+        {
+            return SafeFilePath(pathA, pathB.Split('\\', '/'));
         }
 
         public static void ClearHash()

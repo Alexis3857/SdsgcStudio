@@ -3,7 +3,6 @@ using AssetStudioCLI.Options;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace AssetStudioCLI
@@ -19,7 +18,10 @@ namespace AssetStudioCLI
             if (CLIOptions.convertTexture)
             {
                 var type = CLIOptions.o_imageFormat.Value;
-                if (!TryExportFile(exportPath, item, "." + type.ToString().ToLower(), out var exportFullPath))
+                var converter = new Texture2DConverter(m_Texture2D);
+                if (CLIOptions.o_filenameFormat.Value == FilenameFormat.AssetName_Hash)
+                    item.Hash = converter.GetTextureHash();
+                if (!TryExportFile(exportPath, item, $".{type}", out var exportFullPath))
                     return false;
 
                 if (CLIOptions.o_logLevel.Value <= LoggerEvent.Debug)
@@ -45,8 +47,15 @@ namespace AssetStudioCLI
                     debugLog += sb.ToString();
                 }
 
-                var image = m_Texture2D.ConvertToImage(flip: true);
-                if (image == null)
+                if ((type == ImageFormat.Png && m_Texture2D.m_TextureFormat.IsPng())
+                    || (type == ImageFormat.Webp && m_Texture2D.m_TextureFormat.IsWebP()))
+                {
+                    File.WriteAllBytes(exportFullPath, m_Texture2D.image_data.GetData());
+                    debugLog += $"{item.TypeString} \"{item.Text}\" exported to \"{exportFullPath}\"";
+                    return true;
+                }
+
+                if (!converter.TryConvertToBgra32Image(flip: true, out var image))
                 {
                     Logger.Error($"{debugLog}Export error. Failed to convert texture \"{m_Texture2D.m_Name}\" into image");
                     return false;
@@ -75,11 +84,14 @@ namespace AssetStudioCLI
         {
             debugLog = "";
             var type = CLIOptions.o_imageFormat.Value;
-            var alphaMask = SpriteMaskMode.On;
-            if (!TryExportFile(exportPath, item, "." + type.ToString().ToLower(), out var exportFullPath))
+            var keepSpriteSize = CLIOptions.o_spriteCroppingMode.Value == SpriteCroppingMode.SpriteRect;
+            var converter = new SpriteConverter((Sprite)item.Asset, keepSpriteSize);
+            if (CLIOptions.o_filenameFormat.Value == FilenameFormat.AssetName_Hash)
+                item.Hash = converter.GetSpriteHash(maskMode: SpriteMaskMode.On);
+            if (!TryExportFile(exportPath, item, $".{type}", out var exportFullPath))
                 return false;
-            var image = ((Sprite)item.Asset).GetImage(alphaMask);
-            if (image != null)
+            
+            if (converter.TryConvertToImage(out var image, maskMode: SpriteMaskMode.On))
             {
                 using (image)
                 {
@@ -91,6 +103,7 @@ namespace AssetStudioCLI
                     return true;
                 }
             }
+            Logger.Error($"Failed to convert sprite \"{item.Text}\" into image");
             return false;
         }
 
@@ -98,18 +111,19 @@ namespace AssetStudioCLI
         {
             debugLog = string.Empty;
             var m_AudioClip = (AudioClip)item.Asset;
-            var m_AudioData = BigArrayPool<byte>.Shared.Rent(m_AudioClip.m_AudioData.Size);
+            var audioBuff = BigArrayPool<byte>.Shared.Rent(m_AudioClip.m_AudioData.Size);
             try
             {
                 string exportFullPath;
-                var dataLen = m_AudioClip.m_AudioData.GetData(m_AudioData);
+                var dataLen = m_AudioClip.m_AudioData.GetData(audioBuff);
                 if (dataLen <= 0)
                 {
                     Logger.Error($"Export error. \"{item.Text}\": AudioData was not found");
                     return false;
                 }
-                var converter = new AudioClipConverter(m_AudioClip);
-                if (CLIOptions.o_audioFormat.Value != AudioFormat.None && (converter.IsSupport || converter.IsLegacy))
+                var isWav = m_AudioClip.m_Type == FMODSoundType.WAV || m_AudioClip.IsLegacyRawWav();
+                var converter = new AudioClipConverter(m_AudioClip, audioBuff);
+                if (CLIOptions.o_audioFormat.Value != AudioFormat.None && !isWav && converter.IsSupport)
                 {
                     if (!TryExportFile(exportPath, item, ".wav", out exportFullPath))
                         return false;
@@ -120,12 +134,9 @@ namespace AssetStudioCLI
                         debugLog += GenerateAudioClipInfo(m_AudioClip);
                     }
 
-                    var buffer = converter.IsLegacy
-                        ? converter.RawAudioClipToWav(ref debugLog)
-                        : converter.ConvertToWav(m_AudioData, ref debugLog);
-                    if (buffer == null)
+                    if (!converter.TryConvertToWav(out var buffer, ref debugLog))
                     {
-                        Logger.Error($"{debugLog}Export error. \"{item.Text}\": Failed to convert fmod audio to Wav");
+                        Logger.Error($"{debugLog}Export error. \"{item.Text}\": Failed to convert audio to wav");
                         return false;
                     }
                     File.WriteAllBytes(exportFullPath, buffer);
@@ -137,12 +148,23 @@ namespace AssetStudioCLI
 
                     if (CLIOptions.o_logLevel.Value <= LoggerEvent.Debug)
                     {
-                        debugLog += $"Exporting non-fmod {item.TypeString} \"{m_AudioClip.m_Name}\"..\n";
+                        debugLog += $"Exporting {item.TypeString} \"{m_AudioClip.m_Name}\"..\n";
                         debugLog += GenerateAudioClipInfo(m_AudioClip);
                     }
+
                     using (var file = File.OpenWrite(exportFullPath))
                     {
-                        file.Write(m_AudioData, 0, m_AudioClip.m_AudioData.Size);
+                        if (m_AudioClip.IsLegacyRawWav())
+                        {
+                            if (m_AudioClip.m_AudioData.Endian == EndianType.BigEndian)
+                            {
+                                AudioClipConverter.LegacyRawWavSwapEndian(audioBuff, m_AudioClip.m_AudioData.Size, (LegacyAudioType)m_AudioClip.m_Format);
+                            }
+                            var wavHeaderBuff = AudioClipConverter.LegacyRawWavGenerateHeader(m_AudioClip, ref debugLog);
+                            file.Write(wavHeaderBuff, 0, wavHeaderBuff.Length);
+                        }
+
+                        file.Write(audioBuff, 0, m_AudioClip.m_AudioData.Size);
                     }
                 }
                 debugLog += $"{item.TypeString} \"{item.Text}\" exported to \"{exportFullPath}\"";
@@ -150,39 +172,29 @@ namespace AssetStudioCLI
             }
             finally
             {
-                BigArrayPool<byte>.Shared.Return(m_AudioData, clearArray: true);
+                BigArrayPool<byte>.Shared.Return(audioBuff, clearArray: true);
             }
         }
 
         private static string GenerateAudioClipInfo(AudioClip m_AudioClip)
         {
             var sb = new StringBuilder();
-            if (m_AudioClip.version >= (2, 6))
-            {
-                sb.AppendLine(m_AudioClip.version < 5
-                    ? $"AudioClip type: {m_AudioClip.m_Type}"
-                    : $"AudioClip compression format: {m_AudioClip.m_CompressionFormat}");
-                if (m_AudioClip.version >= 5)
-                {
-                    sb.AppendLine($"AudioClip channel count: {m_AudioClip.m_Channels}");
-                    sb.AppendLine($"AudioClip sample rate: {m_AudioClip.m_Frequency}");
-                    sb.AppendLine($"AudioClip bit depth: {m_AudioClip.m_BitsPerSample}");
-                }
-            }
-            else
-            {
-                var isRawWav = m_AudioClip.m_Format != 0x05;
-                sb.AppendLine($"Is raw wav data: {isRawWav}");
-                if (isRawWav)
-                    sb.AppendLine($"AudioClip channel count: {m_AudioClip.m_Channels}");
+            sb.AppendLine($"AudioClip compression format: {m_AudioClip.GetCompressionFormatString()}");
+            if (m_AudioClip.m_Length > 0)
+                sb.AppendLine($"AudioClip length: {m_AudioClip.m_Length:0.0##}");
+            if (m_AudioClip.m_Frequency > 0)
                 sb.AppendLine($"AudioClip sample rate: {m_AudioClip.m_Frequency}");
-            }
+            if (m_AudioClip.m_Channels > 0)
+                sb.AppendLine($"AudioClip channel count: {m_AudioClip.m_Channels}");
+            if (m_AudioClip.version >= 5)
+                sb.AppendLine($"AudioClip bit depth: {m_AudioClip.m_BitsPerSample}");
+            
             return sb.ToString();
         }
 
         private static bool TryExportFile(string dir, AssetItem item, string extension, out string fullPath)
         {
-            var fileName = FixFileName(item.Text);
+            var fileName = item.Text;
             var filenameFormat = CLIOptions.o_filenameFormat.Value;
             var canOverwrite = CLIOptions.f_overwriteExisting.Value;
             switch (filenameFormat)
@@ -193,8 +205,12 @@ namespace AssetStudioCLI
                 case FilenameFormat.PathID:
                     fileName = item.m_PathID.ToString();
                     break;
+                case FilenameFormat.AssetName_Hash when item.Hash > 0:
+                    fileName = $"{fileName} @{item.Hash:x}";
+                    break;
             }
-            fullPath = Path.Combine(dir, fileName + extension);
+            extension = extension.ToLower();
+            fullPath = Exporter.SafeFilePath(dir, $"{fileName}{extension}");
             if (ExportPathDict.TryAdd(fullPath, true))
             {
                 if (CanWrite(fullPath, dir, canOverwrite))
@@ -202,9 +218,9 @@ namespace AssetStudioCLI
                     return true;
                 }
             }
-            else if (filenameFormat == FilenameFormat.AssetName)
+            else if (filenameFormat == FilenameFormat.AssetName || (filenameFormat == FilenameFormat.AssetName_Hash && item.Hash == 0))
             {
-                fullPath = Path.Combine(dir, fileName + item.UniqueID + extension);
+                fullPath = Exporter.SafeFilePath(dir, $"{fileName}{item.UniqueID}{extension}");
                 if (CanWrite(fullPath, dir, canOverwrite))
                 {
                     return true;
@@ -236,13 +252,6 @@ namespace AssetStudioCLI
                 default:
                     throw new NotImplementedException();
             }
-        }
-
-        private static string FixFileName(string str)
-        {
-            return str.Length >= 260 
-                ? Path.GetRandomFileName() 
-                : Path.GetInvalidFileNameChars().Aggregate(str, (current, c) => current.Replace(c, '_'));
         }
 
         public static void ClearHash()

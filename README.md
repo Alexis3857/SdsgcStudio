@@ -44,4 +44,4 @@ Notes:
 * .NET 10 SDK
 * **AssetStudioFBXNative** uses [FBX SDK 2020.2.1](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-2-1), before building, you need to install the FBX SDK and modify the project file, change include directory and library directory to point to the FBX SDK director
 
-### Everything from this [README.md](https://github.com/aelurum/AssetStudioMod/blob/6de33d04379828abfcd35e0965b23d03b88f4751/README.md) that doesnt contradict what I said above is valid
+### Everything from this [README.md](https://github.com/aelurum/AssetStudioMod/blob/aa1315195f515a2fc22c4e3e24acc21f77aae0b3/README.md) that doesnt contradict what I said above is valid

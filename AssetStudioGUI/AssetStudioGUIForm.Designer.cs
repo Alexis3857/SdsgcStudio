@@ -39,25 +39,23 @@
             this.extractFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.useAssetLoadingViaTypetreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meshLazyLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.assetLoadingToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.parseByTypetreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decompressBundlesToDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.buildSceneHierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moreStudioOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.enablePreview = new System.Windows.Forms.ToolStripMenuItem();
             this.displayInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.autoPlayAudioAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDumpTreeViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.buildTreeStructureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsMenuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.gameOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.customUnityVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.specifyUnityVersionTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.bundleDecompressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.alwaysDecompressToDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.blockInfoCompressionTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.customBlockInfoCompressionComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.blockCompressionTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.customBlockCompressionComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.importOptionsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.saveOptionsToDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameOptionsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.saveGameOptionsToDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameOptionsToolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.moreGameOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showExpOpt = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllObjectssplitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,14 +71,18 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exportAnimatorWithSelectedAnimationClipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportRawAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportRawAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportRawSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportRawFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jsonDumpAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jsonDumpAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jsonDumpSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jsonDumpFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.live2DCubismModelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allL2DModelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,16 +91,17 @@
             this.l2DModelWithFadeMotionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.l2DModelWithClipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAssetListXmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAssetListXmlAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAssetListXmlSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAssetListXmlFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filterTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.writeLogToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showAssetDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportClassStructuresMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorThemeToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -108,8 +111,9 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.sceneExactSearchCheckBox = new System.Windows.Forms.CheckBox();
             this.sceneTreeView = new AssetStudioGUI.GOHierarchy();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.sceneExactSearchCheckBox = new System.Windows.Forms.CheckBox();
             this.treeSearch = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.assetListView = new System.Windows.Forms.ListView();
@@ -153,6 +157,7 @@
             this.dumpTextBox = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.unityVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.sceneContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.shShowRelatedAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shToolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -172,10 +177,12 @@
             this.exportL2DWithFadeLstToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportL2DWithFadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportL2DWithClipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showParentTexture2DToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToSceneHierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showOriginalFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dumpTreeViewContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tvCopyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tvCopyNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tvCopyValToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tvToolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tvExpandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tvCollapseAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -186,6 +193,7 @@
             this.splitContainer1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -237,90 +245,111 @@
             // loadFileToolStripMenuItem
             // 
             this.loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            this.loadFileToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.loadFileToolStripMenuItem.Text = "Load file";
+            this.loadFileToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.loadFileToolStripMenuItem.Text = "Load file...";
             this.loadFileToolStripMenuItem.Click += new System.EventHandler(this.loadFile_Click);
             // 
             // loadFolderToolStripMenuItem
             // 
             this.loadFolderToolStripMenuItem.Name = "loadFolderToolStripMenuItem";
-            this.loadFolderToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.loadFolderToolStripMenuItem.Text = "Load folder";
+            this.loadFolderToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.loadFolderToolStripMenuItem.Text = "Load folder...";
             this.loadFolderToolStripMenuItem.Click += new System.EventHandler(this.loadFolder_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(141, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(150, 6);
             // 
             // extractFileToolStripMenuItem
             // 
             this.extractFileToolStripMenuItem.Name = "extractFileToolStripMenuItem";
-            this.extractFileToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.extractFileToolStripMenuItem.Text = "Extract file";
+            this.extractFileToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.extractFileToolStripMenuItem.Text = "Extract file...";
             this.extractFileToolStripMenuItem.Click += new System.EventHandler(this.extractFileToolStripMenuItem_Click);
             // 
             // extractFolderToolStripMenuItem
             // 
             this.extractFolderToolStripMenuItem.Name = "extractFolderToolStripMenuItem";
-            this.extractFolderToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.extractFolderToolStripMenuItem.Text = "Extract folder";
+            this.extractFolderToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.extractFolderToolStripMenuItem.Text = "Extract folder...";
             this.extractFolderToolStripMenuItem.Click += new System.EventHandler(this.extractFolderToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.displayAll,
-            this.useAssetLoadingViaTypetreeToolStripMenuItem,
-            this.meshLazyLoadToolStripMenuItem,
-            this.assetLoadingToolStripSeparator,
+            this.parseByTypetreeToolStripMenuItem,
+            this.decompressBundlesToDiskToolStripMenuItem,
+            this.buildSceneHierarchyToolStripMenuItem,
+            this.moreStudioOptionsToolStripMenuItem,
+            this.optionsMenuSeparator,
             this.enablePreview,
             this.displayInfo,
             this.autoPlayAudioAssetsToolStripMenuItem,
             this.useDumpTreeViewToolStripMenuItem,
-            this.buildTreeStructureToolStripMenuItem,
-            this.importOptionsToolStripMenuItem,
+            this.optionsMenuSeparator2,
+            this.gameOptionsToolStripMenuItem,
             this.showExpOpt});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.optionsToolStripMenuItem_DropDownOpening);
             // 
             // displayAll
             // 
             this.displayAll.CheckOnClick = true;
             this.displayAll.Name = "displayAll";
-            this.displayAll.Size = new System.Drawing.Size(243, 22);
+            this.displayAll.Size = new System.Drawing.Size(241, 22);
             this.displayAll.Text = "Display all assets";
             this.displayAll.ToolTipText = "Check this option will display all types assets. Not extractable assets can expor" +
     "t the RAW file.";
             this.displayAll.CheckedChanged += new System.EventHandler(this.displayAll_CheckedChanged);
             // 
-            // useAssetLoadingViaTypetreeToolStripMenuItem
+            // parseByTypetreeToolStripMenuItem
             // 
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.Checked = true;
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.CheckOnClick = true;
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.Name = "useAssetLoadingViaTypetreeToolStripMenuItem";
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.Text = "Parse assets using their typetree";
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.ToolTipText = "(Applies to assets with typetree included). Slower but can parse non-standard ass" +
-    "ets. Only for Texture2D, AnimationClip and Material assets for now.";
-            this.useAssetLoadingViaTypetreeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.useAssetLoadingViaTypetreeToolStripMenuItem_CheckedChanged);
+            this.parseByTypetreeToolStripMenuItem.Checked = true;
+            this.parseByTypetreeToolStripMenuItem.CheckOnClick = true;
+            this.parseByTypetreeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.parseByTypetreeToolStripMenuItem.Name = "parseByTypetreeToolStripMenuItem";
+            this.parseByTypetreeToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.parseByTypetreeToolStripMenuItem.Text = "Parse assets using their typetree";
+            this.parseByTypetreeToolStripMenuItem.ToolTipText = "(Will have an effect if an asset bundle contains typetree info)\r\nSlower but can p" +
+    "arse modified assets.\r\nOnly for Texture2D, AnimationClip, Material and SkinnedMe" +
+    "shRenderer assets for now.";
+            this.parseByTypetreeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.parseByTypetreeToolStripMenuItem_CheckedChanged);
             // 
-            // meshLazyLoadToolStripMenuItem
+            // decompressBundlesToDiskToolStripMenuItem
             // 
-            this.meshLazyLoadToolStripMenuItem.Checked = true;
-            this.meshLazyLoadToolStripMenuItem.CheckOnClick = true;
-            this.meshLazyLoadToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.meshLazyLoadToolStripMenuItem.Name = "meshLazyLoadToolStripMenuItem";
-            this.meshLazyLoadToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
-            this.meshLazyLoadToolStripMenuItem.Text = "Use lazy loading for Mesh assets";
-            this.meshLazyLoadToolStripMenuItem.CheckedChanged += new System.EventHandler(this.meshLazyLoadToolStripMenuItem_CheckedChanged);
+            this.decompressBundlesToDiskToolStripMenuItem.CheckOnClick = true;
+            this.decompressBundlesToDiskToolStripMenuItem.Name = "decompressBundlesToDiskToolStripMenuItem";
+            this.decompressBundlesToDiskToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.decompressBundlesToDiskToolStripMenuItem.Text = "Decompress bundles to disk";
+            this.decompressBundlesToDiskToolStripMenuItem.ToolTipText = "If not selected, any bundles less than 2GB will be decompressed to RAM";
+            this.decompressBundlesToDiskToolStripMenuItem.CheckedChanged += new System.EventHandler(this.decompressBundlesToDiskToolStripMenuItem_CheckedChanged);
             // 
-            // assetLoadingToolStripSeparator
+            // buildSceneHierarchyToolStripMenuItem
             // 
-            this.assetLoadingToolStripSeparator.Name = "assetLoadingToolStripSeparator";
-            this.assetLoadingToolStripSeparator.Size = new System.Drawing.Size(240, 6);
+            this.buildSceneHierarchyToolStripMenuItem.Checked = true;
+            this.buildSceneHierarchyToolStripMenuItem.CheckOnClick = true;
+            this.buildSceneHierarchyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.buildSceneHierarchyToolStripMenuItem.Name = "buildSceneHierarchyToolStripMenuItem";
+            this.buildSceneHierarchyToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.buildSceneHierarchyToolStripMenuItem.Text = "Build scene hierarchy";
+            this.buildSceneHierarchyToolStripMenuItem.ToolTipText = "You can disable tree structure building if you don\'t use the Scene Hierarchy tab";
+            this.buildSceneHierarchyToolStripMenuItem.CheckedChanged += new System.EventHandler(this.buildSceneHierarchyToolStripMenuItem_CheckedChanged);
+            // 
+            // moreStudioOptionsToolStripMenuItem
+            // 
+            this.moreStudioOptionsToolStripMenuItem.Name = "moreStudioOptionsToolStripMenuItem";
+            this.moreStudioOptionsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.moreStudioOptionsToolStripMenuItem.Text = "More options...";
+            this.moreStudioOptionsToolStripMenuItem.Click += new System.EventHandler(this.moreStudioOptionsToolStripMenuItem_Click);
+            // 
+            // optionsMenuSeparator
+            // 
+            this.optionsMenuSeparator.Name = "optionsMenuSeparator";
+            this.optionsMenuSeparator.Size = new System.Drawing.Size(238, 6);
             // 
             // enablePreview
             // 
@@ -328,7 +357,7 @@
             this.enablePreview.CheckOnClick = true;
             this.enablePreview.CheckState = System.Windows.Forms.CheckState.Checked;
             this.enablePreview.Name = "enablePreview";
-            this.enablePreview.Size = new System.Drawing.Size(243, 22);
+            this.enablePreview.Size = new System.Drawing.Size(241, 22);
             this.enablePreview.Text = "Enable preview";
             this.enablePreview.ToolTipText = "Toggle the loading and preview of readable assets, such as images, sounds, text, " +
     "etc.\r\nDisable preview if you have performance or compatibility issues.";
@@ -340,7 +369,7 @@
             this.displayInfo.CheckOnClick = true;
             this.displayInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.displayInfo.Name = "displayInfo";
-            this.displayInfo.Size = new System.Drawing.Size(243, 22);
+            this.displayInfo.Size = new System.Drawing.Size(241, 22);
             this.displayInfo.Text = "Display asset information";
             this.displayInfo.ToolTipText = "Toggle the overlay that shows information about each asset, eg. image size, forma" +
     "t, audio bitrate, etc.";
@@ -350,7 +379,7 @@
             // 
             this.autoPlayAudioAssetsToolStripMenuItem.CheckOnClick = true;
             this.autoPlayAudioAssetsToolStripMenuItem.Name = "autoPlayAudioAssetsToolStripMenuItem";
-            this.autoPlayAudioAssetsToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.autoPlayAudioAssetsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.autoPlayAudioAssetsToolStripMenuItem.Text = "Autoplay audio assets";
             this.autoPlayAudioAssetsToolStripMenuItem.ToolTipText = "Autoplay AudioClip assets when selected";
             this.autoPlayAudioAssetsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoPlayAudioAssetsToolStripMenuItem_CheckedChanged);
@@ -359,46 +388,36 @@
             // 
             this.useDumpTreeViewToolStripMenuItem.CheckOnClick = true;
             this.useDumpTreeViewToolStripMenuItem.Name = "useDumpTreeViewToolStripMenuItem";
-            this.useDumpTreeViewToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.useDumpTreeViewToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.useDumpTreeViewToolStripMenuItem.Text = "Use tree view to display dump";
             this.useDumpTreeViewToolStripMenuItem.CheckedChanged += new System.EventHandler(this.useDumpTreeViewToolStripMenuItem_CheckedChanged);
             // 
-            // buildTreeStructureToolStripMenuItem
+            // optionsMenuSeparator2
             // 
-            this.buildTreeStructureToolStripMenuItem.Checked = true;
-            this.buildTreeStructureToolStripMenuItem.CheckOnClick = true;
-            this.buildTreeStructureToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.buildTreeStructureToolStripMenuItem.Name = "buildTreeStructureToolStripMenuItem";
-            this.buildTreeStructureToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
-            this.buildTreeStructureToolStripMenuItem.Text = "Build tree structure";
-            this.buildTreeStructureToolStripMenuItem.ToolTipText = "You can disable tree structure building if you don\'t use the Scene Hierarchy tab";
-            this.buildTreeStructureToolStripMenuItem.CheckedChanged += new System.EventHandler(this.buildTreeStructureToolStripMenuItem_CheckedChanged);
+            this.optionsMenuSeparator2.Name = "optionsMenuSeparator2";
+            this.optionsMenuSeparator2.Size = new System.Drawing.Size(238, 6);
             // 
-            // importOptionsToolStripMenuItem
+            // gameOptionsToolStripMenuItem
             // 
-            this.importOptionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gameOptionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.customUnityVersionToolStripMenuItem,
             this.specifyUnityVersionTextBox,
-            this.bundleDecompressionToolStripMenuItem,
-            this.alwaysDecompressToDiskToolStripMenuItem,
-            this.blockInfoCompressionTypeToolStripMenuItem,
-            this.customBlockInfoCompressionComboBox,
-            this.blockCompressionTypeToolStripMenuItem,
-            this.customBlockCompressionComboBox,
-            this.importOptionsToolStripSeparator,
-            this.saveOptionsToDiskToolStripMenuItem});
-            this.importOptionsToolStripMenuItem.Name = "importOptionsToolStripMenuItem";
-            this.importOptionsToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
-            this.importOptionsToolStripMenuItem.Text = "Import options";
-            this.importOptionsToolStripMenuItem.DropDownClosed += new System.EventHandler(this.importOptions_DropDownClose);
-            this.importOptionsToolStripMenuItem.DropDownOpened += new System.EventHandler(this.importOptions_DropDownOpened);
+            this.gameOptionsToolStripSeparator,
+            this.saveGameOptionsToDiskToolStripMenuItem,
+            this.gameOptionsToolStripSeparator2,
+            this.moreGameOptionsToolStripMenuItem});
+            this.gameOptionsToolStripMenuItem.Name = "gameOptionsToolStripMenuItem";
+            this.gameOptionsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.gameOptionsToolStripMenuItem.Text = "Game-specific options";
+            this.gameOptionsToolStripMenuItem.DropDownClosed += new System.EventHandler(this.gameOptions_DropDownClose);
+            this.gameOptionsToolStripMenuItem.DropDownOpened += new System.EventHandler(this.gameOptions_DropDownOpened);
             // 
             // customUnityVersionToolStripMenuItem
             // 
             this.customUnityVersionToolStripMenuItem.Enabled = false;
             this.customUnityVersionToolStripMenuItem.Name = "customUnityVersionToolStripMenuItem";
             this.customUnityVersionToolStripMenuItem.ShowShortcutKeys = false;
-            this.customUnityVersionToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+            this.customUnityVersionToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.customUnityVersionToolStripMenuItem.Text = "Custom Unity version";
             // 
             // specifyUnityVersionTextBox
@@ -406,93 +425,42 @@
             this.specifyUnityVersionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.specifyUnityVersionTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.specifyUnityVersionTextBox.Name = "specifyUnityVersionTextBox";
+            this.specifyUnityVersionTextBox.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.specifyUnityVersionTextBox.Size = new System.Drawing.Size(100, 23);
-            this.specifyUnityVersionTextBox.ToolTipText = "Specify full Unity version, including letters at the end\r\nExample: 2017.4.39f1";
+            this.specifyUnityVersionTextBox.ToolTipText = "Specify full Unity version, including letters at the end\r\nExample: 2022.3.2f1";
             // 
-            // bundleDecompressionToolStripMenuItem
+            // gameOptionsToolStripSeparator
             // 
-            this.bundleDecompressionToolStripMenuItem.Enabled = false;
-            this.bundleDecompressionToolStripMenuItem.Name = "bundleDecompressionToolStripMenuItem";
-            this.bundleDecompressionToolStripMenuItem.ShowShortcutKeys = false;
-            this.bundleDecompressionToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.bundleDecompressionToolStripMenuItem.Text = "Bundle Decompression";
+            this.gameOptionsToolStripSeparator.Name = "gameOptionsToolStripSeparator";
+            this.gameOptionsToolStripSeparator.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.gameOptionsToolStripSeparator.Size = new System.Drawing.Size(219, 6);
             // 
-            // alwaysDecompressToDiskToolStripMenuItem
+            // saveGameOptionsToDiskToolStripMenuItem
             // 
-            this.alwaysDecompressToDiskToolStripMenuItem.CheckOnClick = true;
-            this.alwaysDecompressToDiskToolStripMenuItem.Name = "alwaysDecompressToDiskToolStripMenuItem";
-            this.alwaysDecompressToDiskToolStripMenuItem.ShowShortcutKeys = false;
-            this.alwaysDecompressToDiskToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.alwaysDecompressToDiskToolStripMenuItem.Text = "Always decompress to disk";
-            this.alwaysDecompressToDiskToolStripMenuItem.ToolTipText = "If not selected, any bundles less than 2GB will be decompressed to RAM";
-            this.alwaysDecompressToDiskToolStripMenuItem.Click += new System.EventHandler(this.alwaysDecompressToDiskToolStripMenuItem_Click);
+            this.saveGameOptionsToDiskToolStripMenuItem.Name = "saveGameOptionsToDiskToolStripMenuItem";
+            this.saveGameOptionsToDiskToolStripMenuItem.ShowShortcutKeys = false;
+            this.saveGameOptionsToDiskToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.saveGameOptionsToDiskToolStripMenuItem.Text = "Save current options to disk...";
+            this.saveGameOptionsToDiskToolStripMenuItem.Click += new System.EventHandler(this.saveOptionsToDiskToolStripMenuItem_Click);
             // 
-            // blockInfoCompressionTypeToolStripMenuItem
+            // gameOptionsToolStripSeparator2
             // 
-            this.blockInfoCompressionTypeToolStripMenuItem.Enabled = false;
-            this.blockInfoCompressionTypeToolStripMenuItem.Name = "blockInfoCompressionTypeToolStripMenuItem";
-            this.blockInfoCompressionTypeToolStripMenuItem.ShowShortcutKeys = false;
-            this.blockInfoCompressionTypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.blockInfoCompressionTypeToolStripMenuItem.Text = "BlockInfo Compression Type";
+            this.gameOptionsToolStripSeparator2.Name = "gameOptionsToolStripSeparator2";
+            this.gameOptionsToolStripSeparator2.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.gameOptionsToolStripSeparator2.Size = new System.Drawing.Size(219, 6);
             // 
-            // customBlockInfoCompressionComboBox
+            // moreGameOptionsToolStripMenuItem
             // 
-            this.customBlockInfoCompressionComboBox.DropDownHeight = 80;
-            this.customBlockInfoCompressionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.customBlockInfoCompressionComboBox.IntegralHeight = false;
-            this.customBlockInfoCompressionComboBox.Items.AddRange(new object[] {
-            "Auto",
-            "Zstd",
-            "Oodle",
-            "Lz4/Lz4HC",
-            "Lzma"});
-            this.customBlockInfoCompressionComboBox.Name = "customBlockInfoCompressionComboBox";
-            this.customBlockInfoCompressionComboBox.Size = new System.Drawing.Size(121, 23);
-            this.customBlockInfoCompressionComboBox.ToolTipText = "Selected compression type will override detected type from asset bundle";
-            this.customBlockInfoCompressionComboBox.SelectedIndexChanged += new System.EventHandler(this.customBlockInfoCompressionComboBox_SelectedIndexChanged);
-            // 
-            // blockCompressionTypeToolStripMenuItem
-            // 
-            this.blockCompressionTypeToolStripMenuItem.Enabled = false;
-            this.blockCompressionTypeToolStripMenuItem.Name = "blockCompressionTypeToolStripMenuItem";
-            this.blockCompressionTypeToolStripMenuItem.ShowShortcutKeys = false;
-            this.blockCompressionTypeToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.blockCompressionTypeToolStripMenuItem.Text = "Block Compression Type";
-            // 
-            // customBlockCompressionComboBox
-            // 
-            this.customBlockCompressionComboBox.DropDownHeight = 80;
-            this.customBlockCompressionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.customBlockCompressionComboBox.IntegralHeight = false;
-            this.customBlockCompressionComboBox.Items.AddRange(new object[] {
-            "Auto",
-            "Zstd",
-            "Oodle",
-            "Lz4/Lz4HC",
-            "Lzma"});
-            this.customBlockCompressionComboBox.Name = "customBlockCompressionComboBox";
-            this.customBlockCompressionComboBox.Size = new System.Drawing.Size(121, 23);
-            this.customBlockCompressionComboBox.ToolTipText = "Selected compression type will override detected type from asset bundle";
-            this.customBlockCompressionComboBox.SelectedIndexChanged += new System.EventHandler(this.customBlockCompressionComboBox_SelectedIndexChanged);
-            // 
-            // importOptionsToolStripSeparator
-            // 
-            this.importOptionsToolStripSeparator.Name = "importOptionsToolStripSeparator";
-            this.importOptionsToolStripSeparator.Size = new System.Drawing.Size(214, 6);
-            // 
-            // saveOptionsToDiskToolStripMenuItem
-            // 
-            this.saveOptionsToDiskToolStripMenuItem.Name = "saveOptionsToDiskToolStripMenuItem";
-            this.saveOptionsToDiskToolStripMenuItem.ShowShortcutKeys = false;
-            this.saveOptionsToDiskToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
-            this.saveOptionsToDiskToolStripMenuItem.Text = "Save options to disk";
-            this.saveOptionsToDiskToolStripMenuItem.Click += new System.EventHandler(this.saveOptionsToDiskToolStripMenuItem_Click);
+            this.moreGameOptionsToolStripMenuItem.Name = "moreGameOptionsToolStripMenuItem";
+            this.moreGameOptionsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.moreGameOptionsToolStripMenuItem.Text = "More options...";
+            this.moreGameOptionsToolStripMenuItem.Click += new System.EventHandler(this.moreGameOptionsToolStripMenuItem_Click);
             // 
             // showExpOpt
             // 
             this.showExpOpt.Name = "showExpOpt";
-            this.showExpOpt.Size = new System.Drawing.Size(243, 22);
-            this.showExpOpt.Text = "Export options";
+            this.showExpOpt.Size = new System.Drawing.Size(241, 22);
+            this.showExpOpt.Text = "Export options...";
             this.showExpOpt.Click += new System.EventHandler(this.showExpOpt_Click);
             // 
             // modelToolStripMenuItem
@@ -557,12 +525,13 @@
             this.toolStripSeparator3,
             this.exportAnimatorWithSelectedAnimationClipToolStripMenuItem,
             this.toolStripSeparator4,
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
+            this.exportRawAssetsToolStripMenuItem,
+            this.dumpAssetsToolStripMenuItem,
+            this.jsonDumpAssetsToolStripMenuItem,
             this.toolStripSeparator6,
             this.live2DCubismModelsToolStripMenuItem,
             this.toolStripSeparator2,
-            this.toolStripMenuItem10});
+            this.exportAssetListXmlToolStripMenuItem});
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.exportToolStripMenuItem.Text = "Export";
@@ -571,22 +540,25 @@
             // 
             this.exportAllAssetsMenuItem.Name = "exportAllAssetsMenuItem";
             this.exportAllAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.exportAllAssetsMenuItem.Tag = "all";
             this.exportAllAssetsMenuItem.Text = "All assets";
-            this.exportAllAssetsMenuItem.Click += new System.EventHandler(this.exportAllAssetsMenuItem_Click);
+            this.exportAllAssetsMenuItem.Click += new System.EventHandler(this.exportAssetsByToolStripMenuItem);
             // 
             // exportSelectedAssetsMenuItem
             // 
             this.exportSelectedAssetsMenuItem.Name = "exportSelectedAssetsMenuItem";
             this.exportSelectedAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.exportSelectedAssetsMenuItem.Tag = "select";
             this.exportSelectedAssetsMenuItem.Text = "Selected assets";
-            this.exportSelectedAssetsMenuItem.Click += new System.EventHandler(this.exportSelectedAssetsMenuItem_Click);
+            this.exportSelectedAssetsMenuItem.Click += new System.EventHandler(this.exportAssetsByToolStripMenuItem);
             // 
             // exportFilteredAssetsMenuItem
             // 
             this.exportFilteredAssetsMenuItem.Name = "exportFilteredAssetsMenuItem";
             this.exportFilteredAssetsMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.exportFilteredAssetsMenuItem.Tag = "filter";
             this.exportFilteredAssetsMenuItem.Text = "Filtered assets";
-            this.exportFilteredAssetsMenuItem.Click += new System.EventHandler(this.exportFilteredAssetsMenuItem_Click);
+            this.exportFilteredAssetsMenuItem.Click += new System.EventHandler(this.exportAssetsByToolStripMenuItem);
             // 
             // toolStripSeparator3
             // 
@@ -605,67 +577,107 @@
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(263, 6);
             // 
-            // toolStripMenuItem2
+            // exportRawAssetsToolStripMenuItem
             // 
-            this.toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem4,
-            this.toolStripMenuItem5,
-            this.toolStripMenuItem6});
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(266, 22);
-            this.toolStripMenuItem2.Text = "Raw";
+            this.exportRawAssetsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportRawAllToolStripMenuItem,
+            this.exportRawSelectToolStripMenuItem,
+            this.exportRawFilterToolStripMenuItem});
+            this.exportRawAssetsToolStripMenuItem.Name = "exportRawAssetsToolStripMenuItem";
+            this.exportRawAssetsToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.exportRawAssetsToolStripMenuItem.Text = "Raw";
             // 
-            // toolStripMenuItem4
+            // exportRawAllToolStripMenuItem
             // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem4.Text = "All assets";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
+            this.exportRawAllToolStripMenuItem.Name = "exportRawAllToolStripMenuItem";
+            this.exportRawAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportRawAllToolStripMenuItem.Tag = "all";
+            this.exportRawAllToolStripMenuItem.Text = "All assets";
+            this.exportRawAllToolStripMenuItem.Click += new System.EventHandler(this.exportRawAssetsByToolStripMenuItem);
             // 
-            // toolStripMenuItem5
+            // exportRawSelectToolStripMenuItem
             // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem5.Text = "Selected assets";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
+            this.exportRawSelectToolStripMenuItem.Name = "exportRawSelectToolStripMenuItem";
+            this.exportRawSelectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportRawSelectToolStripMenuItem.Tag = "select";
+            this.exportRawSelectToolStripMenuItem.Text = "Selected assets";
+            this.exportRawSelectToolStripMenuItem.Click += new System.EventHandler(this.exportRawAssetsByToolStripMenuItem);
             // 
-            // toolStripMenuItem6
+            // exportRawFilterToolStripMenuItem
             // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem6.Text = "Filtered assets";
-            this.toolStripMenuItem6.Click += new System.EventHandler(this.toolStripMenuItem6_Click);
+            this.exportRawFilterToolStripMenuItem.Name = "exportRawFilterToolStripMenuItem";
+            this.exportRawFilterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportRawFilterToolStripMenuItem.Tag = "filter";
+            this.exportRawFilterToolStripMenuItem.Text = "Filtered assets";
+            this.exportRawFilterToolStripMenuItem.Click += new System.EventHandler(this.exportRawAssetsByToolStripMenuItem);
             // 
-            // toolStripMenuItem3
+            // dumpAssetsToolStripMenuItem
             // 
-            this.toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem7,
-            this.toolStripMenuItem8,
-            this.toolStripMenuItem9});
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(266, 22);
-            this.toolStripMenuItem3.Text = "Dump";
+            this.dumpAssetsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dumpAllToolStripMenuItem,
+            this.dumpSelectToolStripMenuItem,
+            this.dumpFilterToolStripMenuItem});
+            this.dumpAssetsToolStripMenuItem.Name = "dumpAssetsToolStripMenuItem";
+            this.dumpAssetsToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.dumpAssetsToolStripMenuItem.Text = "Dump";
             // 
-            // toolStripMenuItem7
+            // dumpAllToolStripMenuItem
             // 
-            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem7.Text = "All assets";
-            this.toolStripMenuItem7.Click += new System.EventHandler(this.toolStripMenuItem7_Click);
+            this.dumpAllToolStripMenuItem.Name = "dumpAllToolStripMenuItem";
+            this.dumpAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dumpAllToolStripMenuItem.Tag = "all";
+            this.dumpAllToolStripMenuItem.Text = "All assets";
+            this.dumpAllToolStripMenuItem.Click += new System.EventHandler(this.dumpAssetsByToolStripMenuItem);
             // 
-            // toolStripMenuItem8
+            // dumpSelectToolStripMenuItem
             // 
-            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem8.Text = "Selected assets";
-            this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripMenuItem8_Click);
+            this.dumpSelectToolStripMenuItem.Name = "dumpSelectToolStripMenuItem";
+            this.dumpSelectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dumpSelectToolStripMenuItem.Tag = "select";
+            this.dumpSelectToolStripMenuItem.Text = "Selected assets";
+            this.dumpSelectToolStripMenuItem.Click += new System.EventHandler(this.dumpAssetsByToolStripMenuItem);
             // 
-            // toolStripMenuItem9
+            // dumpFilterToolStripMenuItem
             // 
-            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem9.Text = "Filtered assets";
-            this.toolStripMenuItem9.Click += new System.EventHandler(this.toolStripMenuItem9_Click);
+            this.dumpFilterToolStripMenuItem.Name = "dumpFilterToolStripMenuItem";
+            this.dumpFilterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.dumpFilterToolStripMenuItem.Tag = "filter";
+            this.dumpFilterToolStripMenuItem.Text = "Filtered assets";
+            this.dumpFilterToolStripMenuItem.Click += new System.EventHandler(this.dumpAssetsByToolStripMenuItem);
+            // 
+            // jsonDumpAssetsToolStripMenuItem
+            // 
+            this.jsonDumpAssetsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.jsonDumpAllToolStripMenuItem,
+            this.jsonDumpSelectToolStripMenuItem,
+            this.jsonDumpFilterToolStripMenuItem});
+            this.jsonDumpAssetsToolStripMenuItem.Name = "jsonDumpAssetsToolStripMenuItem";
+            this.jsonDumpAssetsToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.jsonDumpAssetsToolStripMenuItem.Text = "JSON Dump";
+            // 
+            // jsonDumpAllToolStripMenuItem
+            // 
+            this.jsonDumpAllToolStripMenuItem.Name = "jsonDumpAllToolStripMenuItem";
+            this.jsonDumpAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jsonDumpAllToolStripMenuItem.Tag = "all";
+            this.jsonDumpAllToolStripMenuItem.Text = "All assets";
+            this.jsonDumpAllToolStripMenuItem.Click += new System.EventHandler(this.jsonDumpAssetsByToolStripMenuItem);
+            // 
+            // jsonDumpSelectToolStripMenuItem
+            // 
+            this.jsonDumpSelectToolStripMenuItem.Name = "jsonDumpSelectToolStripMenuItem";
+            this.jsonDumpSelectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jsonDumpSelectToolStripMenuItem.Tag = "select";
+            this.jsonDumpSelectToolStripMenuItem.Text = "Selected assets";
+            this.jsonDumpSelectToolStripMenuItem.Click += new System.EventHandler(this.jsonDumpAssetsByToolStripMenuItem);
+            // 
+            // jsonDumpFilterToolStripMenuItem
+            // 
+            this.jsonDumpFilterToolStripMenuItem.Name = "jsonDumpFilterToolStripMenuItem";
+            this.jsonDumpFilterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jsonDumpFilterToolStripMenuItem.Tag = "filter";
+            this.jsonDumpFilterToolStripMenuItem.Text = "Filtered assets";
+            this.jsonDumpFilterToolStripMenuItem.Click += new System.EventHandler(this.jsonDumpAssetsByToolStripMenuItem);
             // 
             // toolStripSeparator6
             // 
@@ -724,36 +736,39 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(263, 6);
             // 
-            // toolStripMenuItem10
+            // exportAssetListXmlToolStripMenuItem
             // 
-            this.toolStripMenuItem10.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem11,
-            this.toolStripMenuItem12,
-            this.toolStripMenuItem13});
-            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(266, 22);
-            this.toolStripMenuItem10.Text = "Asset list to XML";
+            this.exportAssetListXmlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportAssetListXmlAllToolStripMenuItem,
+            this.exportAssetListXmlSelectToolStripMenuItem,
+            this.exportAssetListXmlFilterToolStripMenuItem});
+            this.exportAssetListXmlToolStripMenuItem.Name = "exportAssetListXmlToolStripMenuItem";
+            this.exportAssetListXmlToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
+            this.exportAssetListXmlToolStripMenuItem.Text = "Asset list to XML";
             // 
-            // toolStripMenuItem11
+            // exportAssetListXmlAllToolStripMenuItem
             // 
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem11.Text = "All assets";
-            this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click);
+            this.exportAssetListXmlAllToolStripMenuItem.Name = "exportAssetListXmlAllToolStripMenuItem";
+            this.exportAssetListXmlAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAssetListXmlAllToolStripMenuItem.Tag = "all";
+            this.exportAssetListXmlAllToolStripMenuItem.Text = "All assets";
+            this.exportAssetListXmlAllToolStripMenuItem.Click += new System.EventHandler(this.exportAssetsListByToolStripMenuItem);
             // 
-            // toolStripMenuItem12
+            // exportAssetListXmlSelectToolStripMenuItem
             // 
-            this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem12.Text = "Selected assets";
-            this.toolStripMenuItem12.Click += new System.EventHandler(this.toolStripMenuItem12_Click);
+            this.exportAssetListXmlSelectToolStripMenuItem.Name = "exportAssetListXmlSelectToolStripMenuItem";
+            this.exportAssetListXmlSelectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAssetListXmlSelectToolStripMenuItem.Tag = "select";
+            this.exportAssetListXmlSelectToolStripMenuItem.Text = "Selected assets";
+            this.exportAssetListXmlSelectToolStripMenuItem.Click += new System.EventHandler(this.exportAssetsListByToolStripMenuItem);
             // 
-            // toolStripMenuItem13
+            // exportAssetListXmlFilterToolStripMenuItem
             // 
-            this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem13.Text = "Filtered assets";
-            this.toolStripMenuItem13.Click += new System.EventHandler(this.toolStripMenuItem13_Click);
+            this.exportAssetListXmlFilterToolStripMenuItem.Name = "exportAssetListXmlFilterToolStripMenuItem";
+            this.exportAssetListXmlFilterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportAssetListXmlFilterToolStripMenuItem.Tag = "filter";
+            this.exportAssetListXmlFilterToolStripMenuItem.Text = "Filtered assets";
+            this.exportAssetListXmlFilterToolStripMenuItem.Click += new System.EventHandler(this.exportAssetsListByToolStripMenuItem);
             // 
             // filterTypeToolStripMenuItem
             // 
@@ -779,6 +794,7 @@
             this.showConsoleToolStripMenuItem,
             this.toolStripMenuItem15,
             this.writeLogToFileToolStripMenuItem,
+            this.showAssetDebugInfoToolStripMenuItem,
             this.exportClassStructuresMenuItem});
             this.debugMenuItem.Name = "debugMenuItem";
             this.debugMenuItem.Size = new System.Drawing.Size(54, 20);
@@ -810,11 +826,19 @@
             this.writeLogToFileToolStripMenuItem.Text = "Write log to file";
             this.writeLogToFileToolStripMenuItem.CheckedChanged += new System.EventHandler(this.writeLogToFileToolStripMenuItem_CheckedChanged);
             // 
+            // showAssetDebugInfoToolStripMenuItem
+            // 
+            this.showAssetDebugInfoToolStripMenuItem.CheckOnClick = true;
+            this.showAssetDebugInfoToolStripMenuItem.Name = "showAssetDebugInfoToolStripMenuItem";
+            this.showAssetDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.showAssetDebugInfoToolStripMenuItem.Text = "Display asset debug info";
+            this.showAssetDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.showAssetDebugInfoToolStripMenuItem_Click);
+            // 
             // exportClassStructuresMenuItem
             // 
             this.exportClassStructuresMenuItem.Name = "exportClassStructuresMenuItem";
             this.exportClassStructuresMenuItem.Size = new System.Drawing.Size(288, 22);
-            this.exportClassStructuresMenuItem.Text = "Export class structures";
+            this.exportClassStructuresMenuItem.Text = "Export class structures...";
             this.exportClassStructuresMenuItem.Click += new System.EventHandler(this.exportClassStructuresMenuItem_Click);
             // 
             // aboutToolStripMenuItem
@@ -891,36 +915,19 @@
             this.tabControl1.Padding = new System.Drawing.Point(17, 3);
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(480, 633);
-            this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 0;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabPageSelected);
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.sceneExactSearchCheckBox);
             this.tabPage1.Controls.Add(this.sceneTreeView);
-            this.tabPage1.Controls.Add(this.treeSearch);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Controls.Add(this.panel2);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(472, 607);
+            this.tabPage1.Size = new System.Drawing.Size(472, 605);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Scene Hierarchy";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // sceneExactSearchCheckBox
-            // 
-            this.sceneExactSearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.sceneExactSearchCheckBox.AutoSize = true;
-            this.sceneExactSearchCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.sceneExactSearchCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sceneExactSearchCheckBox.Location = new System.Drawing.Point(384, 2);
-            this.sceneExactSearchCheckBox.Name = "sceneExactSearchCheckBox";
-            this.sceneExactSearchCheckBox.Size = new System.Drawing.Size(85, 17);
-            this.sceneExactSearchCheckBox.TabIndex = 2;
-            this.sceneExactSearchCheckBox.Text = "Exact search";
-            this.sceneExactSearchCheckBox.UseVisualStyleBackColor = true;
-            this.sceneExactSearchCheckBox.CheckedChanged += new System.EventHandler(this.sceneExactSearchCheckBox_CheckedChanged);
             // 
             // sceneTreeView
             // 
@@ -929,20 +936,46 @@
             this.sceneTreeView.CheckBoxes = true;
             this.sceneTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sceneTreeView.HideSelection = false;
-            this.sceneTreeView.Location = new System.Drawing.Point(0, 20);
+            this.sceneTreeView.Location = new System.Drawing.Point(0, 22);
             this.sceneTreeView.Name = "sceneTreeView";
-            this.sceneTreeView.Size = new System.Drawing.Size(472, 587);
+            this.sceneTreeView.Size = new System.Drawing.Size(472, 583);
             this.sceneTreeView.TabIndex = 0;
             this.sceneTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.sceneTreeView_AfterCheck);
             this.sceneTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.sceneTreeView_NodeMouseClick);
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Window;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.sceneExactSearchCheckBox);
+            this.panel2.Controls.Add(this.treeSearch);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(472, 22);
+            this.panel2.TabIndex = 11;
+            // 
+            // sceneExactSearchCheckBox
+            // 
+            this.sceneExactSearchCheckBox.AutoSize = true;
+            this.sceneExactSearchCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.sceneExactSearchCheckBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.sceneExactSearchCheckBox.Location = new System.Drawing.Point(379, 0);
+            this.sceneExactSearchCheckBox.Name = "sceneExactSearchCheckBox";
+            this.sceneExactSearchCheckBox.Size = new System.Drawing.Size(91, 20);
+            this.sceneExactSearchCheckBox.TabIndex = 2;
+            this.sceneExactSearchCheckBox.Text = "Exact search";
+            this.sceneExactSearchCheckBox.UseVisualStyleBackColor = true;
+            this.sceneExactSearchCheckBox.CheckedChanged += new System.EventHandler(this.sceneExactSearchCheckBox_CheckedChanged);
+            // 
             // treeSearch
             // 
-            this.treeSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.treeSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeSearch.ForeColor = System.Drawing.SystemColors.GrayText;
             this.treeSearch.Location = new System.Drawing.Point(0, 0);
             this.treeSearch.Name = "treeSearch";
-            this.treeSearch.Size = new System.Drawing.Size(472, 20);
+            this.treeSearch.Size = new System.Drawing.Size(470, 16);
             this.treeSearch.TabIndex = 1;
             this.treeSearch.Text = " Search ";
             this.treeSearch.TextChanged += new System.EventHandler(this.treeSearch_TextChanged);
@@ -954,9 +987,9 @@
             // 
             this.tabPage2.Controls.Add(this.assetListView);
             this.tabPage2.Controls.Add(this.panel1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(472, 607);
+            this.tabPage2.Size = new System.Drawing.Size(472, 605);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Asset List";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -976,7 +1009,7 @@
             this.assetListView.HideSelection = false;
             this.assetListView.Location = new System.Drawing.Point(0, 23);
             this.assetListView.Name = "assetListView";
-            this.assetListView.Size = new System.Drawing.Size(472, 584);
+            this.assetListView.Size = new System.Drawing.Size(472, 582);
             this.assetListView.TabIndex = 0;
             this.assetListView.UseCompatibleStateImageBehavior = false;
             this.assetListView.View = System.Windows.Forms.View.Details;
@@ -1051,7 +1084,7 @@
             this.listSearchHistory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listSearchHistory.Location = new System.Drawing.Point(0, 0);
             this.listSearchHistory.Name = "listSearchHistory";
-            this.listSearchHistory.Size = new System.Drawing.Size(351, 21);
+            this.listSearchHistory.Size = new System.Drawing.Size(351, 23);
             this.listSearchHistory.TabIndex = 2;
             this.listSearchHistory.TabStop = false;
             this.listSearchHistory.SelectedIndexChanged += new System.EventHandler(this.listSearchHistory_SelectedIndexChanged);
@@ -1070,16 +1103,16 @@
             "Regex (Container)"});
             this.listSearchFilterMode.Location = new System.Drawing.Point(351, 0);
             this.listSearchFilterMode.Name = "listSearchFilterMode";
-            this.listSearchFilterMode.Size = new System.Drawing.Size(121, 21);
+            this.listSearchFilterMode.Size = new System.Drawing.Size(121, 23);
             this.listSearchFilterMode.TabIndex = 2;
             this.listSearchFilterMode.SelectedIndexChanged += new System.EventHandler(this.listSearchFilterMode_SelectedIndexChanged);
             // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.classesListView);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(472, 607);
+            this.tabPage3.Size = new System.Drawing.Size(472, 605);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Asset Classes";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1095,7 +1128,7 @@
             this.classesListView.Location = new System.Drawing.Point(0, 0);
             this.classesListView.MultiSelect = false;
             this.classesListView.Name = "classesListView";
-            this.classesListView.Size = new System.Drawing.Size(472, 607);
+            this.classesListView.Size = new System.Drawing.Size(472, 605);
             this.classesListView.TabIndex = 0;
             this.classesListView.UseCompatibleStateImageBehavior = false;
             this.classesListView.View = System.Windows.Forms.View.Details;
@@ -1132,6 +1165,7 @@
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(478, 18);
             this.progressBar1.Step = 1;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar1.TabIndex = 1;
             // 
             // tabControl2
@@ -1148,13 +1182,14 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.BackColor = System.Drawing.SystemColors.Window;
+            this.tabPage4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tabPage4.Controls.Add(this.previewPanel);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(768, 607);
+            this.tabPage4.Size = new System.Drawing.Size(768, 605);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Preview";
-            this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // previewPanel
             // 
@@ -1169,7 +1204,7 @@
             this.previewPanel.Image = global::AssetStudioGUI.Properties.Resources.preview;
             this.previewPanel.Location = new System.Drawing.Point(0, 0);
             this.previewPanel.Name = "previewPanel";
-            this.previewPanel.Size = new System.Drawing.Size(768, 607);
+            this.previewPanel.Size = new System.Drawing.Size(766, 603);
             this.previewPanel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.previewPanel.TabIndex = 1;
             this.previewPanel.TabStop = false;
@@ -1183,7 +1218,7 @@
             this.assetInfoLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.assetInfoLabel.Location = new System.Drawing.Point(4, 8);
             this.assetInfoLabel.Name = "assetInfoLabel";
-            this.assetInfoLabel.Size = new System.Drawing.Size(0, 13);
+            this.assetInfoLabel.Size = new System.Drawing.Size(0, 15);
             this.assetInfoLabel.TabIndex = 0;
             // 
             // FMODpanel
@@ -1203,7 +1238,7 @@
             this.FMODpanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FMODpanel.Location = new System.Drawing.Point(0, 0);
             this.FMODpanel.Name = "FMODpanel";
-            this.FMODpanel.Size = new System.Drawing.Size(768, 607);
+            this.FMODpanel.Size = new System.Drawing.Size(766, 603);
             this.FMODpanel.TabIndex = 2;
             this.FMODpanel.Visible = false;
             // 
@@ -1214,9 +1249,9 @@
             this.FMODaudioChannelsLabel.BackColor = System.Drawing.Color.Transparent;
             this.FMODaudioChannelsLabel.ForeColor = System.Drawing.Color.White;
             this.FMODaudioChannelsLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODaudioChannelsLabel.Location = new System.Drawing.Point(384, 255);
+            this.FMODaudioChannelsLabel.Location = new System.Drawing.Point(383, 255);
             this.FMODaudioChannelsLabel.Name = "FMODaudioChannelsLabel";
-            this.FMODaudioChannelsLabel.Size = new System.Drawing.Size(38, 13);
+            this.FMODaudioChannelsLabel.Size = new System.Drawing.Size(40, 15);
             this.FMODaudioChannelsLabel.TabIndex = 10;
             this.FMODaudioChannelsLabel.Text = "Stereo";
             // 
@@ -1227,9 +1262,9 @@
             this.FMODcopyrightLabel.BackColor = System.Drawing.Color.Transparent;
             this.FMODcopyrightLabel.ForeColor = System.Drawing.Color.White;
             this.FMODcopyrightLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODcopyrightLabel.Location = new System.Drawing.Point(214, 365);
+            this.FMODcopyrightLabel.Location = new System.Drawing.Point(213, 365);
             this.FMODcopyrightLabel.Name = "FMODcopyrightLabel";
-            this.FMODcopyrightLabel.Size = new System.Drawing.Size(283, 13);
+            this.FMODcopyrightLabel.Size = new System.Drawing.Size(316, 15);
             this.FMODcopyrightLabel.TabIndex = 9;
             this.FMODcopyrightLabel.Text = "Audio Engine supplied by FMOD by Firelight Technologies.";
             // 
@@ -1240,9 +1275,9 @@
             this.FMODinfoLabel.BackColor = System.Drawing.Color.Transparent;
             this.FMODinfoLabel.ForeColor = System.Drawing.Color.White;
             this.FMODinfoLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODinfoLabel.Location = new System.Drawing.Point(285, 255);
+            this.FMODinfoLabel.Location = new System.Drawing.Point(284, 255);
             this.FMODinfoLabel.Name = "FMODinfoLabel";
-            this.FMODinfoLabel.Size = new System.Drawing.Size(0, 13);
+            this.FMODinfoLabel.Size = new System.Drawing.Size(0, 15);
             this.FMODinfoLabel.TabIndex = 8;
             // 
             // FMODtimerLabel
@@ -1252,9 +1287,9 @@
             this.FMODtimerLabel.BackColor = System.Drawing.Color.Transparent;
             this.FMODtimerLabel.ForeColor = System.Drawing.Color.White;
             this.FMODtimerLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODtimerLabel.Location = new System.Drawing.Point(477, 255);
+            this.FMODtimerLabel.Location = new System.Drawing.Point(476, 255);
             this.FMODtimerLabel.Name = "FMODtimerLabel";
-            this.FMODtimerLabel.Size = new System.Drawing.Size(102, 13);
+            this.FMODtimerLabel.Size = new System.Drawing.Size(102, 15);
             this.FMODtimerLabel.TabIndex = 7;
             this.FMODtimerLabel.Text = "00:00.00 / 00:00.00";
             // 
@@ -1265,9 +1300,9 @@
             this.FMODstatusLabel.BackColor = System.Drawing.Color.Transparent;
             this.FMODstatusLabel.ForeColor = System.Drawing.Color.White;
             this.FMODstatusLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODstatusLabel.Location = new System.Drawing.Point(214, 255);
+            this.FMODstatusLabel.Location = new System.Drawing.Point(213, 255);
             this.FMODstatusLabel.Name = "FMODstatusLabel";
-            this.FMODstatusLabel.Size = new System.Drawing.Size(47, 13);
+            this.FMODstatusLabel.Size = new System.Drawing.Size(51, 15);
             this.FMODstatusLabel.TabIndex = 6;
             this.FMODstatusLabel.Text = "Stopped";
             // 
@@ -1276,7 +1311,7 @@
             this.FMODprogressBar.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODprogressBar.AutoSize = false;
             this.FMODprogressBar.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODprogressBar.Location = new System.Drawing.Point(213, 274);
+            this.FMODprogressBar.Location = new System.Drawing.Point(212, 274);
             this.FMODprogressBar.Maximum = 1000;
             this.FMODprogressBar.Name = "FMODprogressBar";
             this.FMODprogressBar.Size = new System.Drawing.Size(370, 24);
@@ -1291,7 +1326,7 @@
             this.FMODvolumeBar.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODvolumeBar.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.FMODvolumeBar.LargeChange = 2;
-            this.FMODvolumeBar.Location = new System.Drawing.Point(480, 303);
+            this.FMODvolumeBar.Location = new System.Drawing.Point(479, 303);
             this.FMODvolumeBar.Name = "FMODvolumeBar";
             this.FMODvolumeBar.Size = new System.Drawing.Size(103, 45);
             this.FMODvolumeBar.TabIndex = 4;
@@ -1304,8 +1339,9 @@
             this.FMODloopButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODloopButton.Appearance = System.Windows.Forms.Appearance.Button;
             this.FMODloopButton.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.FMODloopButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.FMODloopButton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODloopButton.Location = new System.Drawing.Point(414, 303);
+            this.FMODloopButton.Location = new System.Drawing.Point(413, 303);
             this.FMODloopButton.Name = "FMODloopButton";
             this.FMODloopButton.Size = new System.Drawing.Size(60, 46);
             this.FMODloopButton.TabIndex = 3;
@@ -1319,7 +1355,7 @@
             this.FMODstopButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODstopButton.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.FMODstopButton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODstopButton.Location = new System.Drawing.Point(348, 303);
+            this.FMODstopButton.Location = new System.Drawing.Point(347, 303);
             this.FMODstopButton.Name = "FMODstopButton";
             this.FMODstopButton.Size = new System.Drawing.Size(60, 46);
             this.FMODstopButton.TabIndex = 2;
@@ -1332,7 +1368,7 @@
             this.FMODpauseButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODpauseButton.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.FMODpauseButton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODpauseButton.Location = new System.Drawing.Point(282, 303);
+            this.FMODpauseButton.Location = new System.Drawing.Point(281, 303);
             this.FMODpauseButton.Name = "FMODpauseButton";
             this.FMODpauseButton.Size = new System.Drawing.Size(60, 46);
             this.FMODpauseButton.TabIndex = 1;
@@ -1345,7 +1381,7 @@
             this.FMODplayButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.FMODplayButton.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.FMODplayButton.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.FMODplayButton.Location = new System.Drawing.Point(216, 303);
+            this.FMODplayButton.Location = new System.Drawing.Point(215, 303);
             this.FMODplayButton.Name = "FMODplayButton";
             this.FMODplayButton.Size = new System.Drawing.Size(60, 46);
             this.FMODplayButton.TabIndex = 0;
@@ -1356,11 +1392,12 @@
             // fontPreviewBox
             // 
             this.fontPreviewBox.BackColor = System.Drawing.SystemColors.Window;
+            this.fontPreviewBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.fontPreviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fontPreviewBox.Location = new System.Drawing.Point(0, 0);
             this.fontPreviewBox.Name = "fontPreviewBox";
             this.fontPreviewBox.ReadOnly = true;
-            this.fontPreviewBox.Size = new System.Drawing.Size(768, 607);
+            this.fontPreviewBox.Size = new System.Drawing.Size(766, 603);
             this.fontPreviewBox.TabIndex = 0;
             this.fontPreviewBox.Text = resources.GetString("fontPreviewBox.Text");
             this.fontPreviewBox.Visible = false;
@@ -1372,7 +1409,7 @@
             this.glControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl1.Location = new System.Drawing.Point(0, 0);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(768, 607);
+            this.glControl1.Size = new System.Drawing.Size(766, 603);
             this.glControl1.TabIndex = 4;
             this.glControl1.Visible = false;
             this.glControl1.VSync = false;
@@ -1386,6 +1423,7 @@
             // textPreviewBox
             // 
             this.textPreviewBox.BackColor = System.Drawing.SystemColors.Window;
+            this.textPreviewBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textPreviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textPreviewBox.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.textPreviewBox.Location = new System.Drawing.Point(0, 0);
@@ -1393,7 +1431,7 @@
             this.textPreviewBox.Name = "textPreviewBox";
             this.textPreviewBox.ReadOnly = true;
             this.textPreviewBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textPreviewBox.Size = new System.Drawing.Size(768, 607);
+            this.textPreviewBox.Size = new System.Drawing.Size(766, 603);
             this.textPreviewBox.TabIndex = 2;
             this.textPreviewBox.Visible = false;
             this.textPreviewBox.WordWrap = false;
@@ -1401,34 +1439,38 @@
             // classTextBox
             // 
             this.classTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.classTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.classTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.classTextBox.Location = new System.Drawing.Point(0, 0);
             this.classTextBox.Multiline = true;
             this.classTextBox.Name = "classTextBox";
             this.classTextBox.ReadOnly = true;
             this.classTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.classTextBox.Size = new System.Drawing.Size(768, 607);
+            this.classTextBox.Size = new System.Drawing.Size(766, 603);
             this.classTextBox.TabIndex = 3;
             this.classTextBox.Visible = false;
             this.classTextBox.WordWrap = false;
             // 
             // tabPage5
             // 
+            this.tabPage5.BackColor = System.Drawing.SystemColors.Window;
+            this.tabPage5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tabPage5.Controls.Add(this.dumpTreeView);
             this.tabPage5.Controls.Add(this.dumpTextBox);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Location = new System.Drawing.Point(4, 24);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(768, 607);
+            this.tabPage5.Size = new System.Drawing.Size(768, 605);
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Dump";
-            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // dumpTreeView
             // 
+            this.dumpTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dumpTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dumpTreeView.Location = new System.Drawing.Point(0, 0);
             this.dumpTreeView.Name = "dumpTreeView";
-            this.dumpTreeView.Size = new System.Drawing.Size(768, 607);
+            this.dumpTreeView.PathSeparator = "/";
+            this.dumpTreeView.Size = new System.Drawing.Size(766, 603);
             this.dumpTreeView.TabIndex = 1;
             this.dumpTreeView.Visible = false;
             this.dumpTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.DumpTreeView_NodeMouseClick);
@@ -1436,13 +1478,14 @@
             // dumpTextBox
             // 
             this.dumpTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.dumpTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dumpTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dumpTextBox.Location = new System.Drawing.Point(0, 0);
             this.dumpTextBox.Multiline = true;
             this.dumpTextBox.Name = "dumpTextBox";
             this.dumpTextBox.ReadOnly = true;
             this.dumpTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.dumpTextBox.Size = new System.Drawing.Size(768, 607);
+            this.dumpTextBox.Size = new System.Drawing.Size(766, 603);
             this.dumpTextBox.TabIndex = 0;
             this.dumpTextBox.WordWrap = false;
             // 
@@ -1450,9 +1493,11 @@
             // 
             this.statusStrip1.BackColor = System.Drawing.SystemColors.MenuBar;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel1,
+            this.unityVersionStatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 633);
             this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.ShowItemToolTips = true;
             this.statusStrip1.Size = new System.Drawing.Size(776, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
@@ -1462,10 +1507,27 @@
             this.toolStripStatusLabel1.BackColor = System.Drawing.Color.Transparent;
             this.toolStripStatusLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(761, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(715, 17);
             this.toolStripStatusLabel1.Spring = true;
             this.toolStripStatusLabel1.Text = "Ready to go";
             this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // unityVersionStatusLabel
+            // 
+            this.unityVersionStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.unityVersionStatusLabel.BackColor = System.Drawing.Color.Transparent;
+            this.unityVersionStatusLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom;
+            this.unityVersionStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.unityVersionStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.unityVersionStatusLabel.DoubleClickEnabled = true;
+            this.unityVersionStatusLabel.Margin = new System.Windows.Forms.Padding(0, 2, 6, 1);
+            this.unityVersionStatusLabel.Name = "unityVersionStatusLabel";
+            this.unityVersionStatusLabel.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.unityVersionStatusLabel.Size = new System.Drawing.Size(40, 19);
+            this.unityVersionStatusLabel.Text = "None";
+            this.unityVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.unityVersionStatusLabel.ToolTipText = "Custom Unity version\r\n- Double click to reset";
+            this.unityVersionStatusLabel.DoubleClick += new System.EventHandler(this.unityVersionStatusLabel_DoubleClick);
             // 
             // sceneContextMenuStrip
             // 
@@ -1550,10 +1612,11 @@
             this.exportL2DWithFadeLstToolStripMenuItem,
             this.exportL2DWithFadeToolStripMenuItem,
             this.exportL2DWithClipsToolStripMenuItem,
+            this.showParentTexture2DToolStripMenuItem,
             this.goToSceneHierarchyToolStripMenuItem,
             this.showOriginalFileToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(332, 224);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(332, 246);
             // 
             // copyToolStripMenuItem
             // 
@@ -1616,6 +1679,14 @@
             this.exportL2DWithClipsToolStripMenuItem.Visible = false;
             this.exportL2DWithClipsToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedL2DWithClips_Click);
             // 
+            // showParentTexture2DToolStripMenuItem
+            // 
+            this.showParentTexture2DToolStripMenuItem.Name = "showParentTexture2DToolStripMenuItem";
+            this.showParentTexture2DToolStripMenuItem.Size = new System.Drawing.Size(331, 22);
+            this.showParentTexture2DToolStripMenuItem.Text = "Show parent Texture2D asset";
+            this.showParentTexture2DToolStripMenuItem.Visible = false;
+            this.showParentTexture2DToolStripMenuItem.Click += new System.EventHandler(this.showParentTexture2DToolStripMenuItem_Click);
+            // 
             // goToSceneHierarchyToolStripMenuItem
             // 
             this.goToSceneHierarchyToolStripMenuItem.Name = "goToSceneHierarchyToolStripMenuItem";
@@ -1635,45 +1706,57 @@
             // dumpTreeViewContextMenuStrip
             // 
             this.dumpTreeViewContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tvCopyToolStripMenuItem,
+            this.tvCopyNameToolStripMenuItem,
+            this.tvCopyValToolStripMenuItem,
             this.tvToolStripSeparator1,
             this.tvExpandAllToolStripMenuItem,
             this.tvCollapseAllToolStripMenuItem});
             this.dumpTreeViewContextMenuStrip.Name = "contextMenuStrip3";
-            this.dumpTreeViewContextMenuStrip.Size = new System.Drawing.Size(135, 76);
+            this.dumpTreeViewContextMenuStrip.Size = new System.Drawing.Size(136, 98);
             // 
-            // tvCopyToolStripMenuItem
+            // tvCopyNameToolStripMenuItem
             // 
-            this.tvCopyToolStripMenuItem.Name = "tvCopyToolStripMenuItem";
-            this.tvCopyToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.tvCopyToolStripMenuItem.Text = "Copy";
-            this.tvCopyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem1_Click);
+            this.tvCopyNameToolStripMenuItem.Name = "tvCopyNameToolStripMenuItem";
+            this.tvCopyNameToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.tvCopyNameToolStripMenuItem.Text = "Copy name";
+            this.tvCopyNameToolStripMenuItem.Click += new System.EventHandler(this.tvCopyNameToolStripMenuItem_Click);
+            // 
+            // tvCopyValToolStripMenuItem
+            // 
+            this.tvCopyValToolStripMenuItem.Name = "tvCopyValToolStripMenuItem";
+            this.tvCopyValToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.tvCopyValToolStripMenuItem.Text = "Copy value";
+            this.tvCopyValToolStripMenuItem.Click += new System.EventHandler(this.tvCopyValToolStripMenuItem_Click);
             // 
             // tvToolStripSeparator1
             // 
             this.tvToolStripSeparator1.Name = "tvToolStripSeparator1";
-            this.tvToolStripSeparator1.Size = new System.Drawing.Size(131, 6);
+            this.tvToolStripSeparator1.Size = new System.Drawing.Size(132, 6);
             // 
             // tvExpandAllToolStripMenuItem
             // 
             this.tvExpandAllToolStripMenuItem.Name = "tvExpandAllToolStripMenuItem";
-            this.tvExpandAllToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.tvExpandAllToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.tvExpandAllToolStripMenuItem.Text = "Expand all";
             this.tvExpandAllToolStripMenuItem.Click += new System.EventHandler(this.expandAllToolStripMenuItem1_Click);
             // 
             // tvCollapseAllToolStripMenuItem
             // 
             this.tvCollapseAllToolStripMenuItem.Name = "tvCollapseAllToolStripMenuItem";
-            this.tvCollapseAllToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.tvCollapseAllToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.tvCollapseAllToolStripMenuItem.Text = "Collapse all";
             this.tvCollapseAllToolStripMenuItem.Click += new System.EventHandler(this.collapseAllToolStripMenuItem1_Click);
             // 
             // AssetStudioGUIForm
             // 
             this.AllowDrop = true;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = global::AssetStudioGUI.Properties.Resources._as;
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
@@ -1682,6 +1765,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "AssetStudioModGUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AssetStudioGUIForm_FormClosing);
+            this.Load += new System.EventHandler(this.ReScale);
+            this.FontChanged += new System.EventHandler(this.ReScale);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.AssetStudioGUIForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.AssetStudioGUIForm_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AssetStudioForm_KeyDown);
@@ -1694,7 +1779,8 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
@@ -1793,14 +1879,14 @@
         private System.Windows.Forms.ToolStripMenuItem exportSelectedObjectsmergeWithAnimationClipToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
+        private System.Windows.Forms.ToolStripMenuItem exportRawAssetsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportRawAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportRawSelectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportRawFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpAssetsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpSelectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dumpFilterToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeaderContainer;
         private System.Windows.Forms.ColumnHeader columnHeaderPathID;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
@@ -1809,10 +1895,10 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TextBox dumpTextBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem10;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem13;
+        private System.Windows.Forms.ToolStripMenuItem exportAssetListXmlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAssetListXmlAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAssetListXmlSelectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAssetListXmlFilterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem15;
         private System.Windows.Forms.ToolStripMenuItem dumpSelectedAssetsToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip sceneContextMenuStrip;
@@ -1832,7 +1918,7 @@
         private System.Windows.Forms.ListView assetListView;
         private System.Windows.Forms.ToolStripMenuItem showConsoleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem writeLogToFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem buildTreeStructureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem buildSceneHierarchyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportL2DWithClipsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAsLive2DModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem live2DCubismModelsToolStripMenuItem;
@@ -1843,11 +1929,11 @@
         private System.Windows.Forms.ToolStripMenuItem exportL2DWithFadeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem l2DModelWithFadeListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportL2DWithFadeLstToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem useAssetLoadingViaTypetreeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator assetLoadingToolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem parseByTypetreeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator optionsMenuSeparator;
         private System.Windows.Forms.TreeView dumpTreeView;
         private System.Windows.Forms.ContextMenuStrip dumpTreeViewContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem tvCopyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tvCopyValToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator tvToolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem tvExpandAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tvCollapseAllToolStripMenuItem;
@@ -1859,18 +1945,25 @@
         private System.Windows.Forms.Label FMODaudioChannelsLabel;
         private System.Windows.Forms.ToolStripMenuItem autoPlayAudioAssetsToolStripMenuItem;
         private System.Windows.Forms.CheckBox sceneExactSearchCheckBox;
-        private System.Windows.Forms.ToolStripMenuItem importOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gameOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem customUnityVersionToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox specifyUnityVersionTextBox;
-        private System.Windows.Forms.ToolStripMenuItem bundleDecompressionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem alwaysDecompressToDiskToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem blockInfoCompressionTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox customBlockInfoCompressionComboBox;
-        private System.Windows.Forms.ToolStripMenuItem blockCompressionTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox customBlockCompressionComboBox;
-        private System.Windows.Forms.ToolStripMenuItem saveOptionsToDiskToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator importOptionsToolStripSeparator;
-        private System.Windows.Forms.ToolStripMenuItem meshLazyLoadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGameOptionsToDiskToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator gameOptionsToolStripSeparator2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ToolStripMenuItem tvCopyNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator gameOptionsToolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem moreGameOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel unityVersionStatusLabel;
+        private System.Windows.Forms.ToolStripMenuItem moreStudioOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator optionsMenuSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem decompressBundlesToDiskToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jsonDumpAssetsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jsonDumpAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jsonDumpSelectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jsonDumpFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showAssetDebugInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showParentTexture2DToolStripMenuItem;
     }
 }
 

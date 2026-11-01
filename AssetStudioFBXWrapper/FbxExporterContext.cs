@@ -44,9 +44,9 @@ namespace AssetStudio.FbxInterop
         {
             IsDisposed = true;
 
-            _frameToNode.Clear();
-            _createdMaterials.Clear();
-            _createdTextures.Clear();
+            _frameToNode?.Clear();
+            _createdMaterials?.Clear();
+            _createdTextures?.Clear();
 
             AsFbxDisposeContext(ref _pContext);
         }
@@ -228,19 +228,22 @@ namespace AssetStudio.FbxInterop
 
                     foreach (var bone in boneList)
                     {
+                        var cluster = IntPtr.Zero;
                         if (bone.Path != null)
                         {
                             var frame = rootFrame.FindFrameByPath(bone.Path);
-                            var boneNode = _frameToNode[frame];
 
-                            var cluster = AsFbxMeshCreateCluster(_pContext, boneNode);
-
-                            AsFbxMeshAddCluster(pClusterArray, cluster);
+                            if (frame != null)
+                            {
+                                var boneNode = _frameToNode[frame];
+                                cluster = AsFbxMeshCreateCluster(_pContext, boneNode);
+                            }
+                            else
+                            {
+                                Logger.Debug($"Failed to find bone frame by path: \"{bone.Path}\"");
+                            }
                         }
-                        else
-                        {
-                            AsFbxMeshAddCluster(pClusterArray, IntPtr.Zero);
-                        }
+                        AsFbxMeshAddCluster(pClusterArray, cluster);
                     }
                 }
 

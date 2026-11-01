@@ -106,13 +106,13 @@ public class SdsgcClient(string patch, string version, string key)
         // Load the file without saving to disk
         var assetsManager = new AssetsManager();
         using var reader = new FileReader("bmdata", new MemoryStream(bmdata));
-        var bundle = new BundleFile(reader, assetsManager.Options.BundleOptions);
+        var bundle = new BundleFile(reader, assetsManager.Options);
         
         bundleData = null;
         bundlePackData = null;
         
         // Loop to find two TextAsset named "BundleData" and "BundlePackData"
-        foreach (var file in bundle.fileList)
+        foreach (var file in bundle.FileList)
         {
             if (file.stream == null)
                 continue;
