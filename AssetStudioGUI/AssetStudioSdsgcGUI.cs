@@ -80,33 +80,28 @@ public partial class AssetStudioGUIForm
             Logger.Verbose($"Downloading {packs.Count} packs");
             var bundles = new ConcurrentBag<(string Name, Stream Stream)>();
             var downloadedPackCount = 0;
-            var progressLock = new Lock();
             Progress.Reset();
-            await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount },
-                async (pack, ct) =>
+            await Parallel.ForEachAsync(packs, new ParallelOptions { MaxDegreeOfParallelism = ConcurrentDownloadCount }, async (pack, ct) =>
+            {
+                await using var packStream = await client.DownloadBundleAsync(pack.Key.Section, pack.Key.Name);
+                await using var zip = new ZipArchive(packStream);
+                foreach (var bundle in pack)
                 {
-                    await using var packStream = await client.DownloadBundleAsync(pack.Key.Name);
-                    await using var zip = new ZipArchive(packStream);
-                    foreach (var bundle in pack)
+                    if (zip.GetEntry(bundle.Checksum) is not { } entry)
                     {
-                        if (zip.GetEntry(bundle.Checksum) is not { } entry)
-                        {
-                            Logger.Warning(
-                                $"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
-                            continue;
-                        }
-
-                        await using var unzipped = await entry.OpenAsync(ct);
-                        var bundleContent = new byte[entry.Length];
-                        await unzipped.ReadExactlyAsync(bundleContent, ct);
-                        bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
+                        Logger.Warning(
+                            $"Bundle {bundle.Checksum} ({bundle.Name}) wasn't found in pack {pack.Key.Name}");
+                        continue;
                     }
 
-                    // Report the download to the progress bar
-                    // If I use "Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count)" windows defender doesnt want to load AssetStudioModGUI.dll for some reason
-                    lock (progressLock)
-                        Progress.Report(++downloadedPackCount, packs.Count);
-                });
+                    await using var unzipped = await entry.OpenAsync(ct);
+                    var bundleContent = new byte[entry.Length];
+                    await unzipped.ReadExactlyAsync(bundleContent, ct);
+                    bundles.Add((entry.Name, new MemoryStream(SdsgcClient.FixFakeHeader(bundleContent))));
+                }
+
+                Progress.Report(Interlocked.Increment(ref downloadedPackCount), packs.Count);
+            });
 
             ResetForm();
             await Task.Run(() => Studio.assetsManager.LoadFromStream([.. bundles]));

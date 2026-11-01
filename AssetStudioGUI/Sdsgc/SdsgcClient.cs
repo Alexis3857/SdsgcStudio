@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -22,36 +23,44 @@ public class SdsgcClient(string patch, string version, string key)
     // nanagb = international version of the game
     // aos = android (other values are winos and ios)
     // m = the path that contains images and 3d models
-    private readonly string _bundleUrl = $"https://nanagb.gcdn.netmarble.com/nanagb/bundle/aos/astc/{patch}/{version}/m/";
+    // {0} = Section
+    // {1} = bundle name
+    private readonly string _bundleUrl = $"https://nanagb.gcdn.netmarble.com/nanagb/bundle/aos/astc/{patch}/{version}/{{0}}/{{1}}";
 
     public async Task<IPatchIndexer> GetPatchIndexAsync()
     {
         if (s_indexerCache.TryGetValue((patch, version), out var cached))
             return cached;
-        
-        // Special Unity bundle name that acts as a manifest of all other Unity bundles
-        await using var stream = await DownloadBundleAsync("bmdata");
-        using var ms = new MemoryStream();
-        await stream.CopyToAsync(ms);
-        
-        // Decrypt the bmdata and export its content
-        ExportBmdata(Decrypt(ms.ToArray()), out var bundleDatas, out var bundlePackDatas);
 
-        if (bundleDatas == null || bundlePackDatas == null)
-            throw new Exception("Failed to export bmdata TextAsset");
+        var bmdatas = await Task.WhenAll(Enum.GetValues<Section>().Select(async e =>
+        {
+            // Special Unity bundle name that acts as a manifest of all other Unity bundles
+            await using var stream = await DownloadBundleAsync(e, "bmdata");
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+        
+            // Decrypt the bmdata and export its content
+            ExportBmdata(Decrypt(ms.ToArray()), e, out var bundleDatas, out var bundlePackDatas);
+            
+            if (bundleDatas == null || bundlePackDatas == null)
+                throw new Exception($"Failed to export bmdata TextAsset ({e})");
 
-        var indexer = TMIndexer.Create(bundleDatas, bundlePackDatas);
+            return (BundleData: bundleDatas, BundlePackData: bundlePackDatas);
+        }));
+        
+        var indexer = TMIndexer.Create([..bmdatas.SelectMany(b => b.BundleData)], [..bmdatas.SelectMany(b => b.BundlePackData)]);
         s_indexerCache.TryAdd((patch, version), indexer);
         return indexer;
     }
 
     /// <summary>Downloads a bundle</summary>
+    /// <param name="section">Bundle section</param>
     /// <param name="bundleName"><see cref="BundlePackData.Name"/></param>
     /// <returns>A zip file of several Unity bundles</returns>
     /// <exception cref="HttpRequestException">The response status code was not <see cref="HttpStatusCode.OK"/></exception>
-    public async Task<Stream> DownloadBundleAsync(string bundleName)
+    public async Task<Stream> DownloadBundleAsync(Section section, string bundleName)
     {
-        var uri = new Uri($"{_bundleUrl}{bundleName}");
+        var uri = new Uri(GetBundleUrl(section, bundleName));
         Logger.Verbose($"Downloading {uri}");
         
         var response = await s_httpClient.GetAsync(uri).ConfigureAwait(false);
@@ -62,6 +71,8 @@ public class SdsgcClient(string patch, string version, string key)
         response.Dispose();
         throw new HttpRequestException($"Failed to fetch {uri} ({response.StatusCode}). Are the patch and version values correct?", null, response.StatusCode);
     }
+
+    private string GetBundleUrl(Section section, string name) => string.Format(_bundleUrl, section, name);
     
     // Decrypts encrypted Unity bundles
     private byte[] Decrypt(byte[] data)
@@ -99,9 +110,10 @@ public class SdsgcClient(string patch, string version, string key)
 
     /// <summary>Tries to export the <see cref="BundleData"/> and the <see cref="BundlePackData"/> from a bmdata</summary>
     /// <param name="bmdata">Decrypted bmdata</param>
+    /// <param name="section">Bmdata section</param>
     /// <param name="bundleData">Parsed <see cref="BundleData"/>, if found</param>
     /// <param name="bundlePackData">Parsed <see cref="BundlePackData"/>, if found</param>
-    private static void ExportBmdata(byte[] bmdata, out BundleData[]? bundleData, out BundlePackData[]? bundlePackData)
+    private static void ExportBmdata(byte[] bmdata, Section section, out BundleData[]? bundleData, out BundlePackData[]? bundlePackData)
     {
         // Load the file without saving to disk
         var assetsManager = new AssetsManager();
@@ -139,7 +151,7 @@ public class SdsgcClient(string patch, string version, string key)
                         break;
                     case "BundlePackData":
                         Logger.Verbose("Found BundlePackData");
-                        bundlePackData = BundlePackData.FromBmdata(textAsset.m_Script);
+                        bundlePackData = BundlePackData.FromBmdata(textAsset.m_Script, section);
                         break;
                 }
             }

@@ -15,8 +15,9 @@ public class BundlePackData
     
     /// <summary>Bundles included in the pack (<see cref="BundleData.Checksum"/>)</summary>
     public ImmutableArray<string> IncludeBundles { get; }
+    public Section Section { get; }
     
-    private BundlePackData(BinaryReader reader)
+    private BundlePackData(BinaryReader reader, Section section)
     {
         Name = reader.ReadString();
         OriginSize = reader.ReadInt64();
@@ -27,16 +28,18 @@ public class BundlePackData
         for (var i = 0; i < arrayLength; i++)
             array.Add(reader.ReadString());
         IncludeBundles = array.MoveToImmutable();
+
+        Section = section;
     }
     
     /// <summary>Deserialize the packs from the raw bmdata bytes</summary>
-    public static BundlePackData[] FromBmdata(byte[] bundlePackData)
+    public static BundlePackData[] FromBmdata(byte[] bundlePackData, Section section)
     {
         using var memoryStream = new MemoryStream(bundlePackData);
         using var reader = new BinaryReader(memoryStream);
         var packs = new BundlePackData[reader.ReadInt32()];
         for (var i = 0; i < packs.Length; i++)
-            packs[i] = new BundlePackData(reader);
+            packs[i] = new BundlePackData(reader, section);
         return packs;
     }
 }
