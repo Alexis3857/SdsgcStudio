@@ -35,8 +35,8 @@ Notes:
 
 ## Download
 
-[SdsgcStudio-v1.0.0_portable-win-x64.zip](https://github.com/Alexis3857/SdsgcStudio/releases/download/v1.0.0/SdsgcStudio-v1.0.0_portable-win-x64.zip) small download, requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0).  
-[SdsgcStudio-v1.0.0_contained-win-x64.zip](https://github.com/Alexis3857/SdsgcStudio/releases/download/v1.0.0/SdsgcStudio-v1.0.0_contained-win-x64.zip) larger download, works without installing anything. Pick this one if you're not sure.
+[SdsgcStudio-v1.1.0_portable-win-x64.zip](https://github.com/Alexis3857/SdsgcStudio/releases/download/v1.1.0/SdsgcStudio-v1.1.0_portable-win-x64.zip) small download, requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0).  
+[SdsgcStudio-v1.1.0_contained-win-x64.zip](https://github.com/Alexis3857/SdsgcStudio/releases/download/v1.1.0/SdsgcStudio-v1.1.0_contained-win-x64.zip) larger download, works without installing anything. Pick this one if you're not sure.
 
 ## Build
 
